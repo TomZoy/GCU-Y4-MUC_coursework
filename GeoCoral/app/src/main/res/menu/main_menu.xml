@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:title="Map View"
+        android:enabled="true"
+        android:id="@+id/menu_map"
+        android:visible="true" />
+    <item android:title="List View"
+        android:enabled="true"
+        android:visible="true"
+        android:id="@+id/menu_list" />
+    <item android:title="Code Index"
+        android:visible="true"
+        android:enabled="true"
+        android:id="@+id/menu_codeindex" />
+    <item android:title="Settings"
+        android:visible="true"
+        android:enabled="true"
+        android:id="@+id/menu_settings" />
+    <item android:title="About"
+        android:visible="true"
+        android:enabled="true"
+        android:id="@+id/menu_about" />
+</menu>

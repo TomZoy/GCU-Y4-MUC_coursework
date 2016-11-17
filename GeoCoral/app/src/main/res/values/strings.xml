@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">GeoCoral</string>
+    <string name="dialog_About">Geo Coral was made as a part of a coursework assignment for the module
+\'Mobile and Ubiquitous Computing\' \n
+at Glasgow Caledionian University.
+\n\n
+Designed and Developed by Zoltan Tompa\n
+All rights reserved. 2016</string>
+
+    <string name="dialog_About_OK_btn">Ok</string>
 </resources>
