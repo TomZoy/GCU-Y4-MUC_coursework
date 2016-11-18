@@ -3,14 +3,20 @@ package com.gcu.zoltantompa.geocoral;
 import android.app.DialogFragment;
 import android.app.FragmentManager;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.CompoundButton;
+import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
-public class Settings extends AppCompatActivity {
+public class Settings extends AppCompatActivity implements View.OnClickListener {
 
     FragmentManager fmAboutDialogue;
 
@@ -21,6 +27,20 @@ public class Settings extends AppCompatActivity {
 
     Toast toast;
 
+    pcSaveSettings saveSettings; // Lab 3 Shared Preferences
+    SharedPreferences mySavedSettings; // Lab 3 Shared Preferences
+
+    //UI variables
+    Switch isAudioOn;
+    Switch isDayNightModeOn;
+    Switch isLimitPeriodOn;
+    TextView LimitPeriodFrom;
+    TextView LimitPeriodTill;
+    Switch isRadiusFilterOn;
+    TextView RadiusFilterValue;
+
+    TextView debuggerText;
+
 
 
     @Override
@@ -28,13 +48,60 @@ public class Settings extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
-        //Starting a new Intents
+        //Starting new Intents
         map_Screen = new Intent(getApplicationContext(), MapView.class);
         list_Screen = new Intent(getApplicationContext(), ListView.class);
         settings_Screen = new Intent(getApplicationContext(), Settings.class);
         codeList_Screen = new Intent(getApplicationContext(), CodeIndex.class);
 
+        //getting back saved data
+        mySavedSettings = PreferenceManager.getDefaultSharedPreferences(this);
+        saveSettings = new pcSaveSettings(mySavedSettings);
+        //saveSettings.setDefaultSettings();
+
+        //bind UI
+        isAudioOn = (Switch) findViewById(R.id.enableAudioSw);
+        isDayNightModeOn = (Switch) findViewById(R.id.DayNightSw);
+        isLimitPeriodOn = (Switch)  findViewById(R.id.LimitPeriodSw);
+        LimitPeriodFrom = (TextView) findViewById(R.id.LimitPeriodFrom);
+        LimitPeriodTill = (TextView) findViewById(R.id.LimitPeriodTo);
+        isRadiusFilterOn = (Switch)  findViewById(R.id.RadiusFilterSw);
+        RadiusFilterValue = (TextView) findViewById(R.id.RadiusFilterValue);
+
+
+        debuggerText = (TextView) findViewById(R.id.debugText);
+
+        // Load any saved preferences
+        mySavedSettings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        loadSavedSettings();
+
+
+        isAudioOn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                toast = Toast.makeText(getApplicationContext(), "switch Clicked!", Toast.LENGTH_SHORT);
+                toast.show();
+                saveSettings.saveSettings("SisSAudioEnabled", isAudioOn.isChecked());
+
+                debuggerText.setText(mySavedSettings.getAll().toString());
+            }
+
+        });
+
+
+
+
     }
+
+    private void loadSavedSettings() {
+        isAudioOn.setChecked(mySavedSettings.getBoolean("SisSAudioEnabled",false)); // key, def. value (if no value set)
+        isDayNightModeOn.setChecked(mySavedSettings.getBoolean("SisSDayNightEnabled",false));
+
+        debuggerText.setText(mySavedSettings.getAll().toString());
+
+    }
+
 
 
     ///inflating the menu on this activity
@@ -89,5 +156,31 @@ public class Settings extends AppCompatActivity {
 
         }
         return super.onOptionsItemSelected(item);
+    }
+
+
+
+
+
+    @Override
+    public void onClick(View view) {
+/*
+        // Save settings
+        saveSettings.saveSettings("SisSAudioEnabled", isAudioOn.isChecked());
+        saveSettings.saveSettings("SisSDayNightEnabled", isDayNightModeOn.isChecked());
+        saveSettings.saveSettings("SisSDatePeriodEnabled", isLimitPeriodOn.isChecked());
+
+
+
+
+
+        toast = Toast.makeText(getApplicationContext(), "saving!", Toast.LENGTH_SHORT);
+        toast.show();
+
+
+        saveSettings.saveSettings("SPeriodTill", null);
+        saveSettings.saveSettings("SisSRadiusEnabled", false);
+        saveSettings.saveSettings("SRadiusKm", 100);
+*/
     }
 }
