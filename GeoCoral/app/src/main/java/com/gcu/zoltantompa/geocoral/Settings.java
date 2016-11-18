@@ -7,10 +7,14 @@ import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.Switch;
@@ -111,6 +115,51 @@ public class Settings extends AppCompatActivity implements View.OnClickListener 
                 updateDebug();
             }
         });
+
+
+
+        RadiusFilterValue.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                int defVal = 0;
+
+                try{
+                    defVal = Integer.parseInt(RadiusFilterValue.getText().toString());
+                }
+                catch(NumberFormatException e){
+                    //parsing error, just use default
+                }
+
+                saveSettings.saveSettings("SRadiusKm",defVal);
+                updateDebug();
+            }
+
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            }
+        });
+
+
+
+/*
+            RadiusFilterValue.setOnEditorActionListener(new TextView.OnEditorActionListener(){
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if (actionId == EditorInfo.IME_ACTION_DONE) {
+                    saveSettings.saveSettings("SRadiusKm", Integer.getInteger(RadiusFilterValue.getText().toString()));
+                    updateDebug();
+                    return true;
+                }
+                return false;
+            }
+        });
+*/
+
     }
 
 
