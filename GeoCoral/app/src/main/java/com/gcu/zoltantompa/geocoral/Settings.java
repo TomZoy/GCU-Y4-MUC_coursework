@@ -2,6 +2,7 @@ package com.gcu.zoltantompa.geocoral;
 
 import android.app.DialogFragment;
 import android.app.FragmentManager;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -12,6 +13,10 @@ import android.view.MenuItem;
 public class Settings extends AppCompatActivity {
 
     FragmentManager fmAboutDialogue;
+    Intent map_Screen;
+    Intent list_Screen;
+    Intent settings_Screen;
+    Intent codeList_Screen;
 
 
 
@@ -19,6 +24,13 @@ public class Settings extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
+
+        //Starting a new Intents
+        map_Screen = new Intent(getApplicationContext(), MapView.class);
+        list_Screen = new Intent(getApplicationContext(), ListView.class);
+        settings_Screen = new Intent(getApplicationContext(), Settings.class);
+        codeList_Screen = new Intent(getApplicationContext(), CodeIndex.class);
+
     }
 
 
@@ -36,19 +48,22 @@ public class Settings extends AppCompatActivity {
 
         switch(item.getItemId()) {
             case R.id.menu_map:
-
-                break;
+                System.out.println("Map option Clicked!");
+                startActivity(map_Screen);
+                return true;
 
             case R.id.menu_list:
-
-                break;
+                System.out.println("List option Clicked!");
+                startActivity(list_Screen);
+                return true;
 
             case R.id.menu_codeindex:
-
-                break;
+                System.out.println("CodeList option Clicked!");
+                startActivity(codeList_Screen);
+                return true;
 
             case R.id.menu_settings:
-
+                //this is the current option, so ignore
                 break;
 
             case R.id.menu_about:
