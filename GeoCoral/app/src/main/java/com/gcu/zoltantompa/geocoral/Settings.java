@@ -12,9 +12,11 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
+
 
 public class Settings extends AppCompatActivity implements View.OnClickListener {
 
@@ -76,27 +78,57 @@ public class Settings extends AppCompatActivity implements View.OnClickListener 
         loadSavedSettings();
 
 
-        isAudioOn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 
+        //SWITCHES; set eventlisteners and save settings change
+        isAudioOn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                toast = Toast.makeText(getApplicationContext(), "switch Clicked!", Toast.LENGTH_SHORT);
-                toast.show();
                 saveSettings.saveSettings("SisSAudioEnabled", isAudioOn.isChecked());
-
-                debuggerText.setText(mySavedSettings.getAll().toString());
+                updateDebug();
             }
-
         });
 
+        isDayNightModeOn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                saveSettings.saveSettings("SisSDayNightEnabled", isDayNightModeOn.isChecked());
+                updateDebug();
+            }
+        });
+
+        isLimitPeriodOn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                saveSettings.saveSettings("SisSDatePeriodEnabled", isLimitPeriodOn.isChecked());
+                updateDebug();
+            }
+        });
+
+        isRadiusFilterOn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                saveSettings.saveSettings("SisSRadiusEnabled", isRadiusFilterOn.isChecked());
+                updateDebug();
+            }
+        });
+    }
 
 
+    private void updateDebug()
+    {
+        toast = Toast.makeText(getApplicationContext(), "switch Clicked!", Toast.LENGTH_SHORT);
+        toast.show();
 
+        debuggerText.setText(mySavedSettings.getAll().toString());
     }
 
     private void loadSavedSettings() {
         isAudioOn.setChecked(mySavedSettings.getBoolean("SisSAudioEnabled",false)); // key, def. value (if no value set)
         isDayNightModeOn.setChecked(mySavedSettings.getBoolean("SisSDayNightEnabled",false));
+        isLimitPeriodOn.setChecked(mySavedSettings.getBoolean("SisSDatePeriodEnabled",false));
+        isRadiusFilterOn.setChecked(mySavedSettings.getBoolean("SisSRadiusEnabled",false));
+
+        RadiusFilterValue.setText(Integer.toString(mySavedSettings.getInt("SRadiusKm", 100)));
 
         debuggerText.setText(mySavedSettings.getAll().toString());
 
@@ -164,23 +196,6 @@ public class Settings extends AppCompatActivity implements View.OnClickListener 
 
     @Override
     public void onClick(View view) {
-/*
-        // Save settings
-        saveSettings.saveSettings("SisSAudioEnabled", isAudioOn.isChecked());
-        saveSettings.saveSettings("SisSDayNightEnabled", isDayNightModeOn.isChecked());
-        saveSettings.saveSettings("SisSDatePeriodEnabled", isLimitPeriodOn.isChecked());
 
-
-
-
-
-        toast = Toast.makeText(getApplicationContext(), "saving!", Toast.LENGTH_SHORT);
-        toast.show();
-
-
-        saveSettings.saveSettings("SPeriodTill", null);
-        saveSettings.saveSettings("SisSRadiusEnabled", false);
-        saveSettings.saveSettings("SRadiusKm", 100);
-*/
     }
 }

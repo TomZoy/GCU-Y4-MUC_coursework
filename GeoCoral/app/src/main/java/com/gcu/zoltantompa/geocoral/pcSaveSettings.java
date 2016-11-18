@@ -108,7 +108,7 @@ public class pcSaveSettings extends Activity {
             Log.e("n","Pref Manager is NULL" );
         }
 
-        //setDefaultSettings();
+        //setDefaultSettings();  //todo not sure why this is here???
     }
 
     public void saveSettings(String key, boolean value) {
@@ -135,7 +135,7 @@ public class pcSaveSettings extends Activity {
         saveSettings("SisSDatePeriodEnabled", false);
         saveSettings("SPeriodTill", null);
         saveSettings("SisSRadiusEnabled", false);
-        saveSettings("SRadiusKm", 100);
+        saveSettings("SRadiusKm", 150);
     }
 
 
