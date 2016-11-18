@@ -8,15 +8,18 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-
+import android.widget.Toast;
 
 public class Settings extends AppCompatActivity {
 
     FragmentManager fmAboutDialogue;
+
     Intent map_Screen;
     Intent list_Screen;
     Intent settings_Screen;
     Intent codeList_Screen;
+
+    Toast toast;
 
 
 
@@ -48,18 +51,27 @@ public class Settings extends AppCompatActivity {
 
         switch(item.getItemId()) {
             case R.id.menu_map:
-                System.out.println("Map option Clicked!");
+                System.out.println("Msp option Clicked!");
+                toast = Toast.makeText(getApplicationContext(), "Map option Clicked!", Toast.LENGTH_SHORT);
+                toast.show();
                 startActivity(map_Screen);
+                finish(); //ending .this activity
                 return true;
 
             case R.id.menu_list:
                 System.out.println("List option Clicked!");
+                toast = Toast.makeText(getApplicationContext(), "List option Clicked!", Toast.LENGTH_SHORT);
+                toast.show();
                 startActivity(list_Screen);
+                finish(); //ending .this activity
                 return true;
 
             case R.id.menu_codeindex:
                 System.out.println("CodeList option Clicked!");
+                toast = Toast.makeText(getApplicationContext(), "CodeList option Clicked!", Toast.LENGTH_SHORT);
+                toast.show();
                 startActivity(codeList_Screen);
+                finish(); //ending .this activity
                 return true;
 
             case R.id.menu_settings:
@@ -70,8 +82,7 @@ public class Settings extends AppCompatActivity {
                 // About Dialogue;
                 DialogFragment AboutDlg = new pcAboutDlg();
                 AboutDlg.show(getFragmentManager(), "menu");
-                break;
-                //return true;
+                return true;
 
             default:
                 return super.onOptionsItemSelected(item);
