@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.util.Log;
 import android.widget.Toast;
 
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -133,11 +134,11 @@ public class pcSaveSettings extends Activity {
         saveSettings("SisSAudioEnabled", false);
         saveSettings("SisSDayNightEnabled", false);
         saveSettings("SisSDatePeriodEnabled", false);
+        saveSettings("SPeriodFrom", null);
         saveSettings("SPeriodTill", null);
         saveSettings("SisSRadiusEnabled", false);
         saveSettings("SRadiusKm", 150);
     }
-
 
 
 

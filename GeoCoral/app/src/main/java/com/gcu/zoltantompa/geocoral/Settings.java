@@ -21,8 +21,23 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Locale;
 
-public class Settings extends AppCompatActivity implements View.OnClickListener {
+import android.app.Activity;
+import android.app.DatePickerDialog;
+import android.app.DatePickerDialog.OnDateSetListener;
+import android.os.Bundle;
+import android.text.InputType;
+import android.view.Menu;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.DatePicker;
+import android.widget.EditText;
+
+
+public class Settings extends AppCompatActivity implements OnClickListener {
 
     FragmentManager fmAboutDialogue;
 
@@ -47,6 +62,10 @@ public class Settings extends AppCompatActivity implements View.OnClickListener 
 
     TextView debuggerText;
 
+    private DatePickerDialog fromDatePickerDialog;
+    private DatePickerDialog toDatePickerDialog;
+
+    private SimpleDateFormat dateFormatter;
 
 
     @Override
@@ -69,13 +88,20 @@ public class Settings extends AppCompatActivity implements View.OnClickListener 
         isAudioOn = (Switch) findViewById(R.id.enableAudioSw);
         isDayNightModeOn = (Switch) findViewById(R.id.DayNightSw);
         isLimitPeriodOn = (Switch)  findViewById(R.id.LimitPeriodSw);
-        LimitPeriodFrom = (TextView) findViewById(R.id.LimitPeriodFrom);
-        LimitPeriodTill = (TextView) findViewById(R.id.LimitPeriodTo);
+        LimitPeriodFrom = (EditText) findViewById(R.id.LimitPeriodFrom);
+        LimitPeriodFrom.setInputType(InputType.TYPE_NULL);
+        LimitPeriodTill = (EditText) findViewById(R.id.LimitPeriodTo);
+        LimitPeriodTill.setInputType(InputType.TYPE_NULL);
         isRadiusFilterOn = (Switch)  findViewById(R.id.RadiusFilterSw);
         RadiusFilterValue = (TextView) findViewById(R.id.RadiusFilterValue);
 
 
         debuggerText = (TextView) findViewById(R.id.debugText);
+
+        //set up the date-formatter
+        dateFormatter = new SimpleDateFormat("dd-MM-yyyy", Locale.UK);
+
+
 
         // Load any saved preferences
         mySavedSettings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
@@ -117,7 +143,7 @@ public class Settings extends AppCompatActivity implements View.OnClickListener 
         });
 
 
-
+        //add event-listener to text field
         RadiusFilterValue.addTextChangedListener(new TextWatcher() {
 
             @Override
@@ -144,22 +170,38 @@ public class Settings extends AppCompatActivity implements View.OnClickListener 
             }
         });
 
+        setDateTimeField();
 
+    }
 
-/*
-            RadiusFilterValue.setOnEditorActionListener(new TextView.OnEditorActionListener(){
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if (actionId == EditorInfo.IME_ACTION_DONE) {
-                    saveSettings.saveSettings("SRadiusKm", Integer.getInteger(RadiusFilterValue.getText().toString()));
-                    updateDebug();
-                    return true;
-                }
-                return false;
+    //initialising the date-pickers and setting up listeners
+    private void setDateTimeField() {
+        LimitPeriodFrom.setOnClickListener(this);
+        LimitPeriodTill.setOnClickListener(this);
+
+        Calendar newCalendar = Calendar.getInstance();
+        fromDatePickerDialog = new DatePickerDialog(this, new OnDateSetListener() {
+
+            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                Calendar newDate = Calendar.getInstance();
+                newDate.set(year, monthOfYear, dayOfMonth);
+                LimitPeriodFrom.setText(dateFormatter.format(newDate.getTime()));
+                saveSettings.saveSettings("SPeriodFrom", dateFormatter.format(newDate.getTime()));
             }
-        });
-*/
 
+        },newCalendar.get(Calendar.YEAR), newCalendar.get(Calendar.MONTH), (newCalendar.get((Calendar.DAY_OF_MONTH ))-7));
+
+        toDatePickerDialog = new DatePickerDialog(this, new OnDateSetListener() {
+
+            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                Calendar newDate = Calendar.getInstance();
+                newDate.set(year, monthOfYear, dayOfMonth);
+                LimitPeriodTill.setText(dateFormatter.format(newDate.getTime()));
+                saveSettings.saveSettings("SPeriodTill", dateFormatter.format(newDate.getTime()));
+
+            }
+
+        },newCalendar.get(Calendar.YEAR), newCalendar.get(Calendar.MONTH), newCalendar.get(Calendar.DAY_OF_MONTH));
     }
 
 
@@ -178,6 +220,9 @@ public class Settings extends AppCompatActivity implements View.OnClickListener 
         isRadiusFilterOn.setChecked(mySavedSettings.getBoolean("SisSRadiusEnabled",false));
 
         RadiusFilterValue.setText(Integer.toString(mySavedSettings.getInt("SRadiusKm", 100)));
+
+        LimitPeriodFrom.setText(mySavedSettings.getString("SPeriodFrom",null));
+        LimitPeriodTill.setText(mySavedSettings.getString("SPeriodTill",null));
 
         debuggerText.setText(mySavedSettings.getAll().toString());
 
@@ -242,9 +287,13 @@ public class Settings extends AppCompatActivity implements View.OnClickListener 
 
 
 
-
+    //displaying the date-picker dialogues when the values are clicked/tapped
     @Override
     public void onClick(View view) {
-
+        if(view == LimitPeriodFrom) {
+            fromDatePickerDialog.show();
+        } else if(view == LimitPeriodTill) {
+            toDatePickerDialog.show();
+        }
     }
 }
