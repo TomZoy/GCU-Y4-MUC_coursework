@@ -8,7 +8,12 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.TextView;
 import android.widget.Toast;
+
+/**
+ * code taken and modified from Lab5
+ */
 
 public class CodeIndex extends AppCompatActivity {
 
@@ -21,6 +26,11 @@ public class CodeIndex extends AppCompatActivity {
 
     Toast toast;
 
+
+    //UI variables
+    TextView debuggerText;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,7 +41,22 @@ public class CodeIndex extends AppCompatActivity {
         list_Screen = new Intent(getApplicationContext(), ListView.class);
         settings_Screen = new Intent(getApplicationContext(), Settings.class);
         codeList_Screen = new Intent(getApplicationContext(), CodeIndex.class);
+
+        //bind UI
+        debuggerText = (TextView) findViewById(R.id.debugText);
+
+        readDB();
     }
+
+
+    private void readDB(){
+        Intent iMainAct = getIntent();
+        CodeIndexDB codeIndexDB = (CodeIndexDB) iMainAct.getSerializableExtra("codeIndexDB");
+        debuggerText.setText(codeIndexDB.getCode());
+
+    }
+
+
 
     ///inflating the menu on this activity
     @Override

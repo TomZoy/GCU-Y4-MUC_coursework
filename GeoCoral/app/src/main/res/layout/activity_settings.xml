@@ -53,7 +53,8 @@
         android:layout_marginTop="18dp"
         android:id="@+id/LimitPeriodFrom"
         android:layout_below="@+id/LimitPeriodSw"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:textAlignment="center" />
 
     <EditText
         android:layout_width="wrap_content"
@@ -62,7 +63,8 @@
         android:ems="10"
         android:layout_centerVertical="true"
         android:layout_alignStart="@+id/LimitPeriodFrom"
-        android:id="@+id/LimitPeriodTo" />
+        android:id="@+id/LimitPeriodTo"
+        android:textAlignment="center" />
 
     <EditText
         android:layout_width="wrap_content"
@@ -104,6 +106,7 @@
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@+id/LimitPeriodFrom"
         android:layout_alignBottom="@+id/LimitPeriodFrom"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:visibility="invisible" />
 
 </RelativeLayout>

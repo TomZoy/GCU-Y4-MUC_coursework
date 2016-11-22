@@ -21,6 +21,7 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
@@ -48,8 +49,8 @@ public class Settings extends AppCompatActivity implements OnClickListener {
 
     Toast toast;
 
-    pcSaveSettings saveSettings; // Lab 3 Shared Preferences
-    SharedPreferences mySavedSettings; // Lab 3 Shared Preferences
+    pcSaveSettings saveSettings;
+    SharedPreferences mySavedSettings;
 
     //UI variables
     Switch isAudioOn;
@@ -64,8 +65,10 @@ public class Settings extends AppCompatActivity implements OnClickListener {
 
     private DatePickerDialog fromDatePickerDialog;
     private DatePickerDialog toDatePickerDialog;
-
     private SimpleDateFormat dateFormatter;
+
+    //DB
+    CodeIndexDB database;
 
 
     @Override
@@ -107,6 +110,9 @@ public class Settings extends AppCompatActivity implements OnClickListener {
         mySavedSettings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         loadSavedSettings();
 
+
+        //set up DB
+        initDB();
 
 
         //SWITCHES; set eventlisteners and save settings change
@@ -172,6 +178,23 @@ public class Settings extends AppCompatActivity implements OnClickListener {
 
         setDateTimeField();
 
+    }
+
+    //initialise the database
+    private void initDB(){
+        CodeIndexDB database = new CodeIndexDB();
+
+        //Create database handler instance
+        CodeIndexDBMGR codeIndexDBMGR = new CodeIndexDBMGR(this,"db_codeDescriptions.s3db",null,1);
+        try {
+            codeIndexDBMGR.dbCreate();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        // Lab 5 Retrieve Star Sign Info
+        database = codeIndexDBMGR.findCodeIndexEntry("mag"); //todo this is hardcoded here!!!
+
+        codeList_Screen.putExtra("codeIndexDB",database);
     }
 
     //initialising the date-pickers and setting up listeners
