@@ -20,8 +20,12 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * code-fragments taken from http://www.androidhive.info/2012/01/android-json-parsing-tutorial/
@@ -36,9 +40,9 @@ public class ListView extends AppCompatActivity {
     private android.widget.ListView lv;
 
     // URL to get contacts JSON
-    private static String url = "http://api.androidhive.info/contacts/";
+    private static String url = "http://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&limit=100&minmagnitude=1&orderby=time";
 
-    ArrayList<HashMap<String, String>> contactList;
+    private ArrayList<HashMap<String, String>> refinedEQList = new ArrayList<>();
 
     FragmentManager fmAboutDialogue;
 
@@ -61,8 +65,10 @@ public class ListView extends AppCompatActivity {
         codeList_Screen = new Intent(getApplicationContext(), CodeIndex.class);
 
         //
-        contactList = new ArrayList<>();
+        //contactList = new ArrayList<>();
         lv = (android.widget.ListView)findViewById(R.id.listViewList);
+
+        refinedEQList = new ArrayList<>();
 
         new pcHttpJSONAsync().execute();
     }
@@ -123,6 +129,11 @@ public class ListView extends AppCompatActivity {
 
     private class pcHttpJSONAsync extends AsyncTask<Void, Void, Void> {
 
+        SimpleDateFormat ft =
+                new SimpleDateFormat ("E yyyy.MM.dd 'at' HH:mm:ss");
+
+
+
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -141,42 +152,56 @@ public class ListView extends AppCompatActivity {
             // Making a request to url and getting response
             String jsonStr = sh.makeServiceCall(url);
 
-            Log.e(TAG, "Response from url: " + jsonStr);
+            Log.e(TAG, " ZZZZ - Response from url: " + jsonStr);
 
             if (jsonStr != null) {
+
                 try {
                     JSONObject jsonObj = new JSONObject(jsonStr);
 
                     // Getting JSON Array node
-                    JSONArray contacts = jsonObj.getJSONArray("contacts");
+                    JSONArray results = jsonObj.getJSONArray("features");
 
-                    // looping through All Contacts
-                    for (int i = 0; i < contacts.length(); i++) {
-                        JSONObject c = contacts.getJSONObject(i);
+                    // looping through All instances
+                    for (int i = 0; i < results.length(); i++) {
 
-                        String id = c.getString("id");
-                        String name = c.getString("name");
-                        String email = c.getString("email");
-                        String address = c.getString("address");
-                        String gender = c.getString("gender");
+                        JSONObject c = results.getJSONObject(i);
+                        Log.e(TAG, " id - " + c.getString("id"));
+                        String tmpId = c.getString("id");
 
-                        // Phone node is JSON Object
-                        JSONObject phone = c.getJSONObject("phone");
-                        String mobile = phone.getString("mobile");
-                        String home = phone.getString("home");
-                        String office = phone.getString("office");
+                        JSONObject cc = c.getJSONObject("properties");
+                        Log.e(TAG, " place - " + cc.getString("place"));
+                        String tmpFirstL = cc.getString("place");
+
+                        Log.e(TAG, " mag - " + cc.getString("mag"));
+
+                        String tmpMag = String.format(java.util.Locale.UK,"%.2f", Float.parseFloat(cc.getString("mag"))); //= cc.getString("mag");
+
+                        Log.e(TAG, " time - " + cc.getString("time"));
+                        Date tmpDate = new Date(Long.parseLong(cc.getString("time")));
+                        Log.e(TAG, " time2 - " + ft.format(tmpDate));
+                        Log.e(TAG, " timeZone - " + cc.getString("tz"));
+                        Log.e(TAG, " timeZone2 - " + (Float.parseFloat(cc.getString("tz"))/60));
+
+                        String secL = ft.format(tmpDate)+" (GMT"+ (Float.parseFloat(cc.getString("tz"))/60)+")";
+
+
+                        //EarthQ resultInst = new EarthQ(c.getString("id"));
+                        //resultList.add(resultInst);
+
 
                         // tmp hash map for single contact
-                        HashMap<String, String> contact = new HashMap<>();
+                        HashMap<String, String> tmpRes = new HashMap<>();
 
                         // adding each child node to HashMap key => value
-                        contact.put("id", id);
-                        contact.put("name", name);
-                        contact.put("email", email);
-                        contact.put("mobile", mobile);
+                        tmpRes.put("id", tmpId);
+                        tmpRes.put("mag", tmpMag);
+                        tmpRes.put("firstL", tmpFirstL);
+                        tmpRes.put("secL", secL);
 
-                        // adding contact to contact list
-                        contactList.add(contact);
+                        // add temp results to the list
+                        refinedEQList.add(tmpRes);
+
                     }
                 } catch (final JSONException e) {
                     Log.e(TAG, "Json parsing error: " + e.getMessage());
@@ -189,6 +214,11 @@ public class ListView extends AppCompatActivity {
                                     .show();
                         }
                     });
+
+
+                    //build up the refined list from the objects
+                    //refinedList
+
 
                 }
             } else {
@@ -210,6 +240,7 @@ public class ListView extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(Void result) {
+
             super.onPostExecute(result);
             // Dismiss the progress dialog
             if (pDialog.isShowing())
@@ -217,13 +248,14 @@ public class ListView extends AppCompatActivity {
             /**
              * Updating parsed JSON data into ListView
              * */
+
             ListAdapter adapter = new SimpleAdapter(
-                    ListView.this, contactList,
-                    R.layout.list_view_item, new String[]{"name", "email",
-                    "mobile"}, new int[]{R.id.name,
-                    R.id.email, R.id.mobile});
+                    ListView.this, refinedEQList,
+                    R.layout.list_view_item, new String[]{"mag", "firstL","secL"},
+                    new int[]{R.id.ListtextView_mag,R.id.ListtextViewFirstL, R.id.ListtextViewSecL});
 
             lv.setAdapter(adapter);
+
         }
 
     }
