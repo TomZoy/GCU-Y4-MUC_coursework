@@ -20,11 +20,16 @@ import java.util.Locale;
 
 public class CodeIndexDBMGR extends SQLiteOpenHelper {
 
+    /*
+        private static final String DB_PATH = "/data/data/uk.ac.gcu.bl.mondayschild/databases/";
+    private static final String DB_NAME = "starsigns.s3db";
+    private static final String TBL_STARSIGNSINFO = "starsignsinfo";
+    * */
 
     private static final int DB_VER = 1;
     private static final String DB_PATH = "/data/data/com.gcu.zoltantompa.geocoral/databases/";
-    private static final String DB_NAME = "db_codeDescriptions.s3db";
-    private static final String TBL = "tbl_codeDescriptions";
+    private static final String DB_NAME = "dbcodedesc.s3db";
+    private static final String TBL = "tblcodedesc";
 
     public static final String COL_code = "code";
     public static final String COL_typicalValues = "typicalValues";
@@ -76,7 +81,7 @@ public class CodeIndexDBMGR extends SQLiteOpenHelper {
 
             } catch (IOException e) {
 
-                throw new Error("Error copying database");
+                throw new Error("Z-Error copying database");
 
             }
         }
@@ -91,21 +96,28 @@ public class CodeIndexDBMGR extends SQLiteOpenHelper {
 
         SQLiteDatabase db = null;
 
+        String DB_PATH2 = appContext.getDatabasePath(DB_NAME).toString();
+
         try{
-            String dbPath = DB_PATH + DB_NAME;
-            db = SQLiteDatabase.openDatabase(dbPath, null, SQLiteDatabase.OPEN_READONLY);
+
+            String dbPath = DB_PATH2;// + DB_NAME;
+
+            db = SQLiteDatabase.openDatabase(dbPath, null, SQLiteDatabase.OPEN_READWRITE);
+
             db.setLocale(Locale.getDefault());
             db.setVersion(1);
 
         }catch(SQLiteException e){
 
-            Log.e("SQLHelper","Database not Found!");
+            Log.e("SQLHelper","Z-Database not Found!");
 
         }
 
         if(db != null){
 
             db.close();
+
+            Log.e("SQLHelper","Z-closing!");
 
         }
 
@@ -140,7 +152,7 @@ public class CodeIndexDBMGR extends SQLiteOpenHelper {
             dbInput.close();
         } catch (IOException e)
         {
-            throw new Error("Problems copying DB!");
+            throw new Error("Z-Problems copying DB!");
         }
     }
 

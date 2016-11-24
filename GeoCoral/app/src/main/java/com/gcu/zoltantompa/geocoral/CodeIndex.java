@@ -11,6 +11,8 @@ import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.IOException;
+
 /**
  * code taken and modified from Lab5
  */
@@ -45,9 +47,28 @@ public class CodeIndex extends AppCompatActivity {
         //bind UI
         debuggerText = (TextView) findViewById(R.id.debugText);
 
-        readDB();
+
+        //initDB();
+        //readDB();
     }
 
+
+    //initialise the database
+    private void initDB(){
+        CodeIndexDB database = new CodeIndexDB();
+
+        //Create database handler instance
+        CodeIndexDBMGR codeIndexDBMGR = new CodeIndexDBMGR(this, "dbcodedesc.s3db",null,1);
+        try {
+            codeIndexDBMGR.dbCreate();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        // Lab 5 Retrieve Star Sign Info
+        database = codeIndexDBMGR.findCodeIndexEntry("mag"); //todo this is hardcoded here!!!
+
+        codeList_Screen.putExtra("codeIndexDB",database);
+    }
 
     private void readDB(){
         Intent iMainAct = getIntent();

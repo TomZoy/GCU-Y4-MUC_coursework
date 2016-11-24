@@ -9,14 +9,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.inputmethod.EditorInfo;
 import android.widget.CompoundButton;
-import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -26,13 +23,9 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
-import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.DatePickerDialog.OnDateSetListener;
-import android.os.Bundle;
 import android.text.InputType;
-import android.view.Menu;
-import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -111,9 +104,6 @@ public class Settings extends AppCompatActivity implements OnClickListener {
         loadSavedSettings();
 
 
-        //set up DB
-        initDB();
-
 
         //SWITCHES; set eventlisteners and save settings change
         isAudioOn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -180,22 +170,7 @@ public class Settings extends AppCompatActivity implements OnClickListener {
 
     }
 
-    //initialise the database
-    private void initDB(){
-        CodeIndexDB database = new CodeIndexDB();
 
-        //Create database handler instance
-        CodeIndexDBMGR codeIndexDBMGR = new CodeIndexDBMGR(this,"db_codeDescriptions.s3db",null,1);
-        try {
-            codeIndexDBMGR.dbCreate();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        // Lab 5 Retrieve Star Sign Info
-        database = codeIndexDBMGR.findCodeIndexEntry("mag"); //todo this is hardcoded here!!!
-
-        codeList_Screen.putExtra("codeIndexDB",database);
-    }
 
     //initialising the date-pickers and setting up listeners
     private void setDateTimeField() {
