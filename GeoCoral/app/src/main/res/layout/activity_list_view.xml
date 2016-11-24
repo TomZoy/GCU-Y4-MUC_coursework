@@ -21,4 +21,10 @@
         android:textAlignment="center"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true" />
+
+    <ListView
+        android:id="@+id/listViewList"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:headerDividersEnabled="true" />
 </RelativeLayout>
