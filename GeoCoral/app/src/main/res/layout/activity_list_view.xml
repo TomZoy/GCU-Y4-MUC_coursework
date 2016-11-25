@@ -31,5 +31,6 @@
         android:layout_margin="0dp"
         android:divider="@color/ZcolorBG"
         android:dividerHeight="6dp"
-        android:footerDividersEnabled="true" />
+        android:footerDividersEnabled="true"
+        style="@style/Widget.AppCompat.ListView" />
 </RelativeLayout>

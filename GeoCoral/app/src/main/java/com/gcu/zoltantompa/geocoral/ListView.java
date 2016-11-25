@@ -2,7 +2,6 @@ package com.gcu.zoltantompa.geocoral;
 
 import android.app.DialogFragment;
 import android.app.FragmentManager;
-import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.AsyncTask;
@@ -12,6 +11,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListAdapter;
 import android.widget.SimpleAdapter;
 import android.widget.Toast;
@@ -20,12 +21,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.ObjectOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * code-fragments taken from http://www.androidhive.info/2012/01/android-json-parsing-tutorial/
@@ -39,10 +39,11 @@ public class ListView extends AppCompatActivity {
     private ProgressDialog pDialog;
     private android.widget.ListView lv;
 
-    // URL to get contacts JSON
+    // URL to get JSON
     private static String url = "http://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&limit=100&minmagnitude=1&orderby=time";
 
     private ArrayList<HashMap<String, String>> refinedEQList = new ArrayList<>();
+    public ArrayList<EarthQ> EQList= new ArrayList<EarthQ>();
 
     FragmentManager fmAboutDialogue;
 
@@ -50,6 +51,7 @@ public class ListView extends AppCompatActivity {
     Intent list_Screen;
     Intent settings_Screen;
     Intent codeList_Screen;
+    Intent details_Screen;
 
     Toast toast;
 
@@ -63,10 +65,27 @@ public class ListView extends AppCompatActivity {
         list_Screen = new Intent(getApplicationContext(), ListView.class);
         settings_Screen = new Intent(getApplicationContext(), Settings.class);
         codeList_Screen = new Intent(getApplicationContext(), CodeIndex.class);
+        details_Screen = new Intent(getApplicationContext(), Details.class);
 
-        //
-        //contactList = new ArrayList<>();
+
+        //bind the listView
         lv = (android.widget.ListView)findViewById(R.id.listViewList);
+        lv.setTextFilterEnabled(true);
+        // Bind onclick event handler
+        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                toast = Toast.makeText(getApplicationContext(), "pos:"+ position +" id="+id, Toast.LENGTH_SHORT);
+                toast.show();
+
+
+
+                details_Screen.putExtra("selEQ",EQList.get(position));
+                details_Screen.putExtra("test",846);
+                startActivity(details_Screen);
+
+            }
+        });
+
 
         refinedEQList = new ArrayList<>();
 
@@ -129,10 +148,7 @@ public class ListView extends AppCompatActivity {
 
     private class pcHttpJSONAsync extends AsyncTask<Void, Void, Void> {
 
-        SimpleDateFormat ft =
-                new SimpleDateFormat ("E yyyy.MM.dd 'at' HH:mm:ss");
-
-
+        SimpleDateFormat ft = new SimpleDateFormat ("E yyyy.MM.dd 'at' HH:mm:ss");
 
         @Override
         protected void onPreExecute() {
@@ -165,29 +181,54 @@ public class ListView extends AppCompatActivity {
                     // looping through All instances
                     for (int i = 0; i < results.length(); i++) {
 
-                        JSONObject c = results.getJSONObject(i);
-                        Log.e(TAG, " id - " + c.getString("id"));
-                        String tmpId = c.getString("id");
+                        JSONObject JsonNode = results.getJSONObject(i);
+                        JSONObject JsonNProperties = JsonNode.getJSONObject("properties");
+                        JSONObject JsonNGeometry = JsonNode.getJSONObject("geometry");
 
-                        JSONObject cc = c.getJSONObject("properties");
-                        Log.e(TAG, " place - " + cc.getString("place"));
-                        String tmpFirstL = cc.getString("place");
 
-                        Log.e(TAG, " mag - " + cc.getString("mag"));
+                        Log.e(TAG, " id - " + JsonNode.getString("id"));
+                        String tmpId = JsonNode.getString("id");
 
-                        String tmpMag = String.format(java.util.Locale.UK,"%.2f", Float.parseFloat(cc.getString("mag"))); //= cc.getString("mag");
 
-                        Log.e(TAG, " time - " + cc.getString("time"));
-                        Date tmpDate = new Date(Long.parseLong(cc.getString("time")));
+                        Log.e(TAG, " place - " + JsonNProperties.getString("place"));
+                        String tmpFirstL = JsonNProperties.getString("place");
+
+                        Log.e(TAG, " mag - " + JsonNProperties.getString("mag"));
+
+                        String tmpMag = String.format(java.util.Locale.UK,"%.2f", Float.parseFloat(JsonNProperties.getString("mag"))); //= cc.getString("mag");
+
+                        Log.e(TAG, " time - " + JsonNProperties.getString("time"));
+                        Date tmpDate = new Date(Long.parseLong(JsonNProperties.getString("time")));
                         Log.e(TAG, " time2 - " + ft.format(tmpDate));
-                        Log.e(TAG, " timeZone - " + cc.getString("tz"));
-                        Log.e(TAG, " timeZone2 - " + (Float.parseFloat(cc.getString("tz"))/60));
+                        Log.e(TAG, " timeZone - " + JsonNProperties.getString("tz"));
+                        Log.e(TAG, " timeZone2 - " + (Float.parseFloat(JsonNProperties.getString("tz"))/60));
 
-                        String secL = ft.format(tmpDate)+" (GMT"+ (Float.parseFloat(cc.getString("tz"))/60)+")";
+                        String secL = ft.format(tmpDate)+" (GMT"+ (Float.parseFloat(JsonNProperties.getString("tz"))/60)+")";
+
+                        //building object-based list for details view to use
+                        EarthQ resultInst = new EarthQ(JsonNode.getString("id"));
+                        resultInst.setMag(Float.parseFloat(JsonNProperties.getString("mag")));
+                        resultInst.setPlace(JsonNProperties.getString("place"));
+                        resultInst.setTime(Long.parseLong(JsonNProperties.getString("time")));
+                        resultInst.setTz(Integer.parseInt(JsonNProperties.getString("tz")));
+
+                        if(!JsonNProperties.isNull("sig"))
+                        resultInst.setSig(Integer.parseInt(JsonNProperties.getString("sig")));
+                        if(!JsonNProperties.isNull("updated"))
+                        resultInst.setUpdated(JsonNProperties.getLong("updated"));
+                        if(!JsonNProperties.isNull("alert"))
+                        resultInst.setAltert(JsonNProperties.getString("alert"));
+                        if(!JsonNProperties.isNull("felt"))
+                        resultInst.setFeltBy(JsonNProperties.getInt("felt"));
+                        if(!JsonNProperties.isNull("sources"))
+                        resultInst.setMagSources(JsonNProperties.getString("sources"));
+
+                        resultInst.setLongitude(JsonNGeometry.getJSONArray("coordinates").getDouble(0));
+                        resultInst.setLatitude(JsonNGeometry.getJSONArray("coordinates").getDouble(1));
+                        resultInst.setDepth(JsonNGeometry.getJSONArray("coordinates").getDouble(2));
 
 
-                        //EarthQ resultInst = new EarthQ(c.getString("id"));
-                        //resultList.add(resultInst);
+                        EQList.add(resultInst);
 
 
                         // tmp hash map for single contact
@@ -252,7 +293,7 @@ public class ListView extends AppCompatActivity {
             ListAdapter adapter = new SimpleAdapter(
                     ListView.this, refinedEQList,
                     R.layout.list_view_item, new String[]{"mag", "firstL","secL"},
-                    new int[]{R.id.ListtextView_mag,R.id.ListtextViewFirstL, R.id.ListtextViewSecL});
+                    new int[]{R.id.ListtextView_mag,R.id.detailsViewFirstL, R.id.ListtextViewSecL});
 
             lv.setAdapter(adapter);
 

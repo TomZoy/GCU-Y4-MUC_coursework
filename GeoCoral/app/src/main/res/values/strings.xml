@@ -8,4 +8,5 @@ Designed and Developed \n by Zoltan Tompa\n
 All rights reserved. 2016</string>
 
     <string name="dialog_About_OK_btn">Ok</string>
+    <string name="backButtonText"><![CDATA[< back]]></string>
 </resources>
