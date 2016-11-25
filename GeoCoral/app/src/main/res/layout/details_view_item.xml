@@ -21,15 +21,6 @@
         android:layout_alignParentBottom="false" />
 
     <TextView
-        android:text="2016-15-15"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/detailsViewSecL"
-        android:textStyle="normal|italic"
-        android:layout_below="@+id/detailsViewFirstL"
-        android:layout_alignStart="@+id/detailsViewFirstL" />
-
-    <TextView
         android:text="Middle of nowhere"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -39,5 +30,16 @@
         android:layout_alignParentTop="true"
         android:layout_toEndOf="@+id/details_view_icon"
         android:layout_marginStart="26dp" />
+
+    <TextView
+        android:text="2016-15-15"
+        android:layout_height="wrap_content"
+        android:id="@+id/detailsViewSecL"
+        android:textStyle="normal|italic"
+        android:layout_width="wrap_content"
+        android:layout_below="@+id/detailsViewFirstL"
+        android:layout_alignParentEnd="true"
+        android:textAlignment="textEnd"
+        android:layout_marginRight="10dp" />
 
 </RelativeLayout>

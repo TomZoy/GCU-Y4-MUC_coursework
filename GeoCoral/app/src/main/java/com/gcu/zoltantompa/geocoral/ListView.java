@@ -21,7 +21,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.ObjectOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -78,9 +77,8 @@ public class ListView extends AppCompatActivity {
                 toast.show();
 
 
-
+                //send the selected object to the new intent
                 details_Screen.putExtra("selEQ",EQList.get(position));
-                details_Screen.putExtra("test",846);
                 startActivity(details_Screen);
 
             }
@@ -231,7 +229,7 @@ public class ListView extends AppCompatActivity {
                         EQList.add(resultInst);
 
 
-                        // tmp hash map for single contact
+                        // tmp hash map for single event
                         HashMap<String, String> tmpRes = new HashMap<>();
 
                         // adding each child node to HashMap key => value
@@ -293,7 +291,7 @@ public class ListView extends AppCompatActivity {
             ListAdapter adapter = new SimpleAdapter(
                     ListView.this, refinedEQList,
                     R.layout.list_view_item, new String[]{"mag", "firstL","secL"},
-                    new int[]{R.id.ListtextView_mag,R.id.detailsViewFirstL, R.id.ListtextViewSecL});
+                    new int[]{R.id.ListtextView_mag,R.id.ListtextViewFirstL, R.id.ListtextViewSecL});
 
             lv.setAdapter(adapter);
 
