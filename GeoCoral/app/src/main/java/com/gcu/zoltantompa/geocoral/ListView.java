@@ -73,8 +73,8 @@ public class ListView extends AppCompatActivity {
         // Bind onclick event handler
         lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                toast = Toast.makeText(getApplicationContext(), "pos:"+ position +" id="+id, Toast.LENGTH_SHORT);
-                toast.show();
+                //toast = Toast.makeText(getApplicationContext(), "pos:"+ position +" id="+id, Toast.LENGTH_SHORT);
+                //toast.show();
 
 
                 //send the selected object to the new intent
@@ -200,8 +200,10 @@ public class ListView extends AppCompatActivity {
                         Log.e(TAG, " time2 - " + ft.format(tmpDate));
                         Log.e(TAG, " timeZone - " + JsonNProperties.getString("tz"));
                         Log.e(TAG, " timeZone2 - " + (Float.parseFloat(JsonNProperties.getString("tz"))/60));
+                        Float tz = Float.parseFloat(JsonNProperties.getString("tz"))/60;
+                        String GMT = (tz > 0) ? "+"+tz : Float.toString(tz);
 
-                        String secL = ft.format(tmpDate)+" (GMT"+ (Float.parseFloat(JsonNProperties.getString("tz"))/60)+")";
+                        String secL = ft.format(tmpDate)+" (GMT"+GMT+")";
 
                         //building object-based list for details view to use
                         EarthQ resultInst = new EarthQ(JsonNode.getString("id"));

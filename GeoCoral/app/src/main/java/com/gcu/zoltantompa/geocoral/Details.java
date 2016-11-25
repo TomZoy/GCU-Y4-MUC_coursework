@@ -1,5 +1,6 @@
 package com.gcu.zoltantompa.geocoral;
 
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -17,7 +18,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Details extends AppCompatActivity {
+public class Details extends AppCompatActivity{
 
     private String TAG = Details.class.getSimpleName();
     private EarthQ selectedEQ;
@@ -25,8 +26,9 @@ public class Details extends AppCompatActivity {
     private ArrayList<HashMap<String, String>>  detailedEQList = new ArrayList<>();
     SimpleDateFormat ft = new SimpleDateFormat ("E yyyy.MM.dd 'at' HH:mm:ss");
 
-    private static Map<String,Drawable> iconSet;
+    private static Map<String,Integer> iconSet;
     private static String[] labels = new String[]{
+            "",
             "Significance level",
             "Alert level",
             "Felt by",
@@ -49,22 +51,9 @@ public class Details extends AppCompatActivity {
         //bind UI
         backButton = (Button) findViewById(R.id.detailsView_backBTN);
         lv = (android.widget.ListView)findViewById(R.id.detailsViewList);
-        //lv.setTextFilterEnabled(true);
 
-        //set listener
-        View.OnClickListener clickListernerHandler = new View.OnClickListener() {
-            public void onClick(View v) {
-                switch(v.getId()) {
-                    case R.id.detailsView_backBTN:
-                        toast = Toast.makeText(getApplicationContext(), "Back Button Clicked!", Toast.LENGTH_SHORT);
-                        toast.show();
-                        break;
 
-                    default:
-                        break;
-                }
-            }
-        };
+
 
         selectedEQ = (EarthQ) this.getIntent().getSerializableExtra("selEQ");
 
@@ -75,16 +64,17 @@ public class Details extends AppCompatActivity {
     }
 
     private void initIconset(){
-        iconSet = new HashMap<String,Drawable>();
+        iconSet = new HashMap<String,Integer>();
 
-        iconSet.put("alert",ResourcesCompat.getDrawable(getResources(), R.drawable.alert, null));
-        iconSet.put("sig",ResourcesCompat.getDrawable(getResources(), R.drawable.sign, null));
-        iconSet.put("depth",ResourcesCompat.getDrawable(getResources(), R.drawable.depth, null));
-        iconSet.put("feltBy",ResourcesCompat.getDrawable(getResources(), R.drawable.feltby, null));
-        iconSet.put("location",ResourcesCompat.getDrawable(getResources(), R.drawable.location, null));
-        iconSet.put("mag",ResourcesCompat.getDrawable(getResources(), R.drawable.mag, null));
-        iconSet.put("magSource",ResourcesCompat.getDrawable(getResources(), R.drawable.magsource, null));
-        iconSet.put("updated",ResourcesCompat.getDrawable(getResources(), R.drawable.updated, null));
+        iconSet.put("event",R.drawable.event);
+        iconSet.put("alert", R.drawable.alert);
+        iconSet.put("sig", R.drawable.sign);
+        iconSet.put("depth", R.drawable.depth);
+        iconSet.put("feltBy", R.drawable.feltby);
+        iconSet.put("location", R.drawable.location);
+        iconSet.put("mag", R.drawable.mag);
+        iconSet.put("magSource", R.drawable.magsource);
+        iconSet.put("updated", R.drawable.updated);
     }
 
 
@@ -94,7 +84,9 @@ public class Details extends AppCompatActivity {
         if(selectedEQ != null)
         {
 
-            for (int i=0; i<8 ; i++) {
+            labels[0] = selectedEQ.getPlace();
+
+            for (int i=0; i<9 ; i++) {
 
                 // tmp hash map for single event
                 HashMap<String, String> tmpMap = new HashMap<>();
@@ -103,59 +95,73 @@ public class Details extends AppCompatActivity {
                 tmpMap.put("firstL", labels[i]+":");
 
                 String s = "";
-                Drawable d;
+                Integer icon;
 
                 switch (i){
                     case 0:
-                        s = giveStringOrNA(selectedEQ.getSig());
-                        d = iconSet.get("sig");
+
+                        tmpMap.put("firstL",tmpMap.get("firstL").replace(":",""));
+
+                        //convert the date
+                        Date tmpDate1 = new Date(Long.parseLong(giveStringOrNA(selectedEQ.getTime())));
+                        //convert the timezone offset
+                        float tz1 = (Float.parseFloat(giveStringOrNA(selectedEQ.getTz()))/60);
+                        String GMT1 = (tz1 > 0) ? "+"+tz1 : Float.toString(tz1);
+
+                        s = ft.format(tmpDate1) + " (GMT"+GMT1+")";
+                        icon = iconSet.get("event");
                         break;
+
                     case 1:
-                        s = giveStringOrNA(selectedEQ.getAltert());
-                        d = iconSet.get("alert");
+                        s = giveStringOrNA(selectedEQ.getSig());
+                        icon = iconSet.get("sig");
                         break;
                     case 2:
-                        s = giveStringOrNA(selectedEQ.getFeltBy());
-                        d = iconSet.get("feltBy");
+                        s = giveStringOrNA(selectedEQ.getAltert());
+                        icon = iconSet.get("alert");
                         break;
                     case 3:
-                        s = giveStringOrNA(selectedEQ.getMagSources());
-                        d = iconSet.get("magSource");
+                        s = giveStringOrNA(selectedEQ.getFeltBy());
+                        icon = iconSet.get("feltBy");
                         break;
                     case 4:
-                        s = giveStringOrNA(selectedEQ.getDepth())+"Km";
-                        d = iconSet.get("depth");
+                        s = giveStringOrNA(selectedEQ.getMagSources());
+                        icon = iconSet.get("magSource");
                         break;
                     case 5:
-                        s = giveStringOrNA(selectedEQ.getMag());
-                        d = iconSet.get("mag");
+                        s = giveStringOrNA(selectedEQ.getDepth())+" Km";
+                        icon = iconSet.get("depth");
                         break;
                     case 6:
-                        s = giveStringOrNA(selectedEQ.getLongitude()) + "° / " + giveStringOrNA(selectedEQ.getLatitude())+"°";
-                        d = iconSet.get("location");
+                        s = giveStringOrNA(selectedEQ.getMag());
+                        icon = iconSet.get("mag");
                         break;
                     case 7:
+                        s = giveStringOrNA(selectedEQ.getLongitude()) + "° / " + giveStringOrNA(selectedEQ.getLatitude())+"°";
+                        icon = iconSet.get("location");
+                        break;
+                    case 8:
                         //convert the date
                         Date tmpDate = new Date(Long.parseLong(giveStringOrNA(selectedEQ.getUpdated())));
                         //convert the timezone offset
                         float tz = (Float.parseFloat(giveStringOrNA(selectedEQ.getTz()))/60);
+                        String GMT = (tz > 0) ? "+"+tz : Float.toString(tz);
 
-                        s = ft.format(tmpDate) + " (GMT"+tz+")";
+                        s = ft.format(tmpDate) + " (GMT"+GMT+")";
 
-                        d = iconSet.get("updated");
+                        icon = iconSet.get("updated");
                         break;
                     default:
 
                         s= "something is wrong";
+                        icon = null;
                         break;
 
                 }
 
 
-
-
-
                 tmpMap.put("secL", s);
+                tmpMap.put("icon",Integer.toString(icon));
 
                 detailedEQList.add(tmpMap);
 
@@ -165,8 +171,8 @@ public class Details extends AppCompatActivity {
             //update UI
             ListAdapter adapter = new SimpleAdapter(
                     Details.this, detailedEQList,
-                    R.layout.details_view_item, new String[]{ "firstL","secL"},
-                    new int[]{R.id.detailsViewFirstL, R.id.detailsViewSecL});
+                    R.layout.details_view_item, new String[]{"icon", "firstL","secL"},
+                    new int[]{R.id.details_view_icon,R.id.detailsViewFirstL, R.id.detailsViewSecL});
 
             lv.setAdapter(adapter);
 
@@ -199,4 +205,16 @@ public class Details extends AppCompatActivity {
 
     }
 
+
+
+    public void goBack(View view)
+    {
+        //toast = Toast.makeText(getApplicationContext(), "Back Button Clicked!", Toast.LENGTH_SHORT);
+        //toast.show();
+
+        Intent list_Screen = new Intent(getApplicationContext(), ListView.class);
+
+        startActivity(list_Screen);
+        finish(); //ending .this activity
+    }
 }
