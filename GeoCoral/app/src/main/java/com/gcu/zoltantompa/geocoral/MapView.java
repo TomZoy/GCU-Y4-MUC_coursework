@@ -3,6 +3,7 @@ package com.gcu.zoltantompa.geocoral;
 import android.app.DialogFragment;
 import android.app.FragmentManager;
 import android.content.Intent;
+import android.support.annotation.FloatRange;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -131,9 +132,9 @@ private void buildMarkers(ArrayList<EarthQ> EQList) {
 
         MarkerOptions currentMarker = new MarkerOptions()
                 .position(new LatLng(eq.getLatitude(), eq.getLongitude()))
-                .title(eq.getPlace())
+                .title("mag:"+(Float.toString(eq.getMag())) + " - " +eq.getPlace())
                 .snippet(eq.getTimeString())
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));
+                .icon(BitmapDescriptorFactory.defaultMarker(calcMarkerColor(eq.getSig()))); //set color to match significance
 
         markerList.add(currentMarker);
 
@@ -141,6 +142,20 @@ private void buildMarkers(ArrayList<EarthQ> EQList) {
     }
 
 }
+private Float calcMarkerColor(int input)
+{
+    //input: 0 - 1000, 0 is low 1000 is high
+    //output: 1 is red 100 is green, lineal in between
+
+    //map it to the range
+    float f = (input/10);
+
+    //map it to match color (reverse it)
+    f = 100-f;
+
+    return f;
+}
+
 
 
     @Override
@@ -150,17 +165,7 @@ private void buildMarkers(ArrayList<EarthQ> EQList) {
         //once the map is loaded, execute the async service
         service.execute();
 
-
-
-        // Add a marker in Sydney, Australia, and move the camera.
-
-        mMap.addMarker(new MarkerOptions()
-                .position(new LatLng(-34, 151))
-                .title("Marker in Sydney")
-                .snippet("test 2nd line")
-                //.icon(BitmapDescriptorFactory.fromResource(R.drawable.locmarker)));
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE)));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(-34, 151)));
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(47.468637, 19.067642)));
 
 
 
@@ -189,7 +194,7 @@ private void buildMarkers(ArrayList<EarthQ> EQList) {
                 System.out.println("List option Clicked!");
                 toast = Toast.makeText(getApplicationContext(), "List option Clicked!", Toast.LENGTH_SHORT);
                 toast.show();
-                startActivity(map_Screen);
+                startActivity(list_Screen);
                 finish(); //ending .this activity
                 return true;
 
