@@ -1,6 +1,8 @@
 package com.gcu.zoltantompa.geocoral;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * Created by TomZoy on 2016-11-24.
@@ -25,6 +27,8 @@ public class EarthQ implements Serializable{
     private Double longitude;
     private Double latitude;
 
+    SimpleDateFormat ft = new SimpleDateFormat("E yyyy.MM.dd 'at' HH:mm:ss");
+
     public EarthQ(String id)
     {
         this.id = id;
@@ -48,6 +52,16 @@ public class EarthQ implements Serializable{
 
     public Long getTime() {
         return time;
+    }
+
+    public String getTimeString() {
+        Date tmpDate = new Date(this.time);
+
+        Float tz = Float.parseFloat(this.tz.toString())/60;
+        String GMT = (tz > 0) ? "+"+tz : Float.toString(tz);
+
+        return ft.format(tmpDate)+" (GMT"+GMT+")";
+
     }
 
     public void setTime(Long time) {

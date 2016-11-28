@@ -8,6 +8,10 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ListAdapter;
+import android.widget.SimpleAdapter;
 import android.widget.Toast;
 
 
@@ -18,6 +22,9 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 
 
 /*
@@ -35,10 +42,25 @@ public class MapView extends AppCompatActivity  implements OnMapReadyCallback{
     Intent list_Screen;
     Intent settings_Screen;
     Intent codeList_Screen;
+    Intent details_Screen;
+
 
     private GoogleMap mMap;
 
+    //private ArrayList<EarthQ> EQList;
+
+    private pcHttpJSONAsync service;
+
+
     Toast toast;
+
+
+    // URL to get JSON
+    private static String url = "http://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&limit=100&minmagnitude=1&orderby=time";
+
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +72,7 @@ public class MapView extends AppCompatActivity  implements OnMapReadyCallback{
         list_Screen = new Intent(getApplicationContext(), ListView.class);
         settings_Screen = new Intent(getApplicationContext(), Settings.class);
         codeList_Screen = new Intent(getApplicationContext(), CodeIndex.class);
+        details_Screen = new Intent(getApplicationContext(), Details.class);
 
 
 
@@ -57,16 +80,77 @@ public class MapView extends AppCompatActivity  implements OnMapReadyCallback{
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+
+
+
+
+
+
+
+        service = new pcHttpJSONAsync(url,this) {
+            @Override
+            public void onResponseReceived(Object resultMap, ArrayList<EarthQ> resultObjList) {
+
+
+               // EQList = resultObjList;
+
+                toast = Toast.makeText(getApplicationContext(), "List size!" + resultObjList.size(), Toast.LENGTH_SHORT);
+                toast.show();
+
+                buildMarkers(resultObjList);
+
+                /*
+                // Bind onclick event handler
+                lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        //toast = Toast.makeText(getApplicationContext(), "pos:"+ position +" id="+id, Toast.LENGTH_SHORT);
+                        //toast.show();
+
+
+                        //send the selected object to the new intent
+                        details_Screen.putExtra("selEQ",EQList.get(position));
+                        startActivity(details_Screen);
+
+                    }
+                });
+*/
+            }
+        };
+
+
     }
 
+private void buildMarkers(ArrayList<EarthQ> EQList) {
+
+    ArrayList<MarkerOptions> markerList = new ArrayList<>();
 
 
+    //iterate through the result list, and build and assign them to the map
+    for (int i = 0; i < EQList.size(); i++) {
+        EarthQ eq = EQList.get(i);
 
+        MarkerOptions currentMarker = new MarkerOptions()
+                .position(new LatLng(eq.getLatitude(), eq.getLongitude()))
+                .title(eq.getPlace())
+                .snippet(eq.getTimeString())
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE));
+
+        markerList.add(currentMarker);
+
+        mMap.addMarker(currentMarker);
+    }
+
+}
 
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+
+        //once the map is loaded, execute the async service
+        service.execute();
+
+
 
         // Add a marker in Sydney, Australia, and move the camera.
 
@@ -75,7 +159,7 @@ public class MapView extends AppCompatActivity  implements OnMapReadyCallback{
                 .title("Marker in Sydney")
                 .snippet("test 2nd line")
                 //.icon(BitmapDescriptorFactory.fromResource(R.drawable.locmarker)));
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE)));
         mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(-34, 151)));
 
 

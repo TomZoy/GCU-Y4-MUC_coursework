@@ -1,6 +1,7 @@
 package com.gcu.zoltantompa.geocoral;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
@@ -22,6 +23,9 @@ public abstract class pcHttpJSONAsync extends AsyncTask<Void, Void, Void> implem
 
     private String URL;
     private ProgressDialog pDialog;
+
+    private Context CT;
+
     ListView targetListView;
 
 
@@ -29,11 +33,11 @@ public abstract class pcHttpJSONAsync extends AsyncTask<Void, Void, Void> implem
     public ArrayList<EarthQ> EQList= new ArrayList<>();
 
 
-    public pcHttpJSONAsync(String url, ListView li) {
+    public pcHttpJSONAsync(String url, Context ct) {
 
-        targetListView = li;
         hashMapEQList = new ArrayList<>();
 
+        CT = ct;
         URL = url;
 
     }
@@ -42,7 +46,7 @@ public abstract class pcHttpJSONAsync extends AsyncTask<Void, Void, Void> implem
     protected void onPreExecute() {
         super.onPreExecute();
         // Showing progress dialog
-        pDialog = new ProgressDialog(targetListView);
+        pDialog = new ProgressDialog(CT);//(targetListView);
         pDialog.setMessage("Please wait...");
         pDialog.setCancelable(false);
         pDialog.show();

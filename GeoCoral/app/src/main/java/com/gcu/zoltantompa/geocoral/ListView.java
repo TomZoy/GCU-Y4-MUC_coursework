@@ -27,13 +27,12 @@ public class ListView extends AppCompatActivity {
 
     private String TAG = ListView.class.getSimpleName();
 
-    private ProgressDialog pDialog;
     private android.widget.ListView lv;
 
     // URL to get JSON
     private static String url = "http://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&limit=100&minmagnitude=1&orderby=time";
 
-
+    //the list of EarthQuake objects
     public ArrayList<EarthQ> EQList;
 
     FragmentManager fmAboutDialogue;
@@ -45,18 +44,6 @@ public class ListView extends AppCompatActivity {
     Intent details_Screen;
 
     Toast toast;
-
-
-    /*
-    this is the update bit, this should go to the ovrewriten interface
-
-
-    * */
-
-
-
-
-
 
 
 
@@ -79,7 +66,7 @@ public class ListView extends AppCompatActivity {
 
 
 
-        pcHttpJSONAsync service = new pcHttpJSONAsync(url,ListView.this) {
+        pcHttpJSONAsync service = new pcHttpJSONAsync(url, this) {
             @Override
             public void onResponseReceived(Object resultMap, ArrayList<EarthQ> resultObjList) {
                 // Updating parsed JSON data into ListView
@@ -168,6 +155,8 @@ public class ListView extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 /*
+
+OLD VERSION
     private class pcHttpJSONAsync extends AsyncTask<Void, Void, Void> {
 
         SimpleDateFormat ft = new SimpleDateFormat ("E yyyy.MM.dd 'at' HH:mm:ss");
