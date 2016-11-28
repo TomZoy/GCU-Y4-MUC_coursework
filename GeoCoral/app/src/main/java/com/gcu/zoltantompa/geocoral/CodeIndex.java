@@ -5,13 +5,22 @@ import android.app.FragmentManager;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.method.ScrollingMovementMethod;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * code taken and modified from Lab5
@@ -28,9 +37,14 @@ public class CodeIndex extends AppCompatActivity {
 
     Toast toast;
 
+    List<CodeInstance> codeList;
+
 
     //UI variables
     TextView debuggerText;
+    TextView typicalValuesTextBox;
+    TextView descriptionTextBox;
+    Spinner codeListSpinner;
 
 
     @Override
@@ -45,17 +59,24 @@ public class CodeIndex extends AppCompatActivity {
         codeList_Screen = new Intent(getApplicationContext(), CodeIndex.class);
 
         //bind UI
-        debuggerText = (TextView) findViewById(R.id.debugText);
+        debuggerText = (TextView)findViewById(R.id.debugTextBox);
+        typicalValuesTextBox = (TextView) findViewById(R.id.typicalValuesTextBox);
+        descriptionTextBox = (TextView) findViewById(R.id.descriptionTextBox);
+        descriptionTextBox.setMovementMethod(new ScrollingMovementMethod());
+        codeListSpinner =  (Spinner) findViewById(R.id.codeListSpinner);
 
 
-        //initDB();
-        //readDB();
+        //initDB("sig");
+        initSpinner();
     }
 
 
+/*
+this is not needed
+
     //initialise the database
-    private void initDB(){
-        CodeIndexDB database = new CodeIndexDB();
+    private void initDB(String code){
+        CodeInstance database = new CodeInstance();
 
         //Create database handler instance
         CodeIndexDBMGR codeIndexDBMGR = new CodeIndexDBMGR(this, "dbcodedesc.s3db",null,1);
@@ -65,16 +86,59 @@ public class CodeIndex extends AppCompatActivity {
             e.printStackTrace();
         }
         // Lab 5 Retrieve Star Sign Info
-        database = codeIndexDBMGR.findCodeIndexEntry("mag"); //todo this is hardcoded here!!!
+        database = codeIndexDBMGR.findCodeIndexEntry(code); //todo this is hardcoded here!!!
 
-        codeList_Screen.putExtra("codeIndexDB",database);
+        //debuggerText.setText(database.getDescription().toString());
+
+        typicalValuesTextBox.setText(database.getTypicalValues());
+        descriptionTextBox.setText(database.getDescription());
+
     }
+*/
+    private void initSpinner(){
 
-    private void readDB(){
-        Intent iMainAct = getIntent();
-        CodeIndexDB codeIndexDB = (CodeIndexDB) iMainAct.getSerializableExtra("codeIndexDB");
-        debuggerText.setText(codeIndexDB.getCode());
+        //Create database handler instance
+        CodeIndexDBMGR codeIndexDBMGR = new CodeIndexDBMGR(this, "dbcodedesc.s3db",null,1);
+        try {
+            codeIndexDBMGR.dbCreate();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
+        //get a list of all the db items
+        codeList = codeIndexDBMGR.findAllCodeIndexEntries();
+        List<String> spinnerArray =  new ArrayList<String>();
+
+        //get the codes from all the db-items
+        for (int i=0; i<codeList.size();i++)
+        {
+            spinnerArray.add(codeList.get(i).getCode());
+        }
+
+        //populate the spinner
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(
+                this, android.R.layout.simple_spinner_item, spinnerArray);
+
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        codeListSpinner.setAdapter(adapter);
+
+
+        codeListSpinner.setOnItemSelectedListener(
+                new AdapterView.OnItemSelectedListener() {
+                    @Override
+                    public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
+                        Log.e("debug-on selected", " position: " + position + " id:" +id);
+
+                        typicalValuesTextBox.setText(codeList.get(position).getTypicalValues());
+                        descriptionTextBox.setText(codeList.get(position).getDescription());
+
+                    }
+
+                    @Override
+                    public void onNothingSelected(AdapterView<?> parentView) {
+                        // your code here
+                    }
+                });
     }
 
 

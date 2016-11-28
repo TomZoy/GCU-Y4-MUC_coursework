@@ -12,6 +12,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -157,12 +159,12 @@ public class CodeIndexDBMGR extends SQLiteOpenHelper {
     }
 
 
-    public void addCodeIndexDBFields(CodeIndexDB aCodeIndexDB) {
+    public void addCodeIndexDBFields(CodeInstance aCodeInstance) {
 
         ContentValues values = new ContentValues();
-        values.put(COL_code, aCodeIndexDB.getCode());
-        values.put(COL_typicalValues, aCodeIndexDB.getTypicalValues());
-        values.put(COL_description, aCodeIndexDB.getDescription());
+        values.put(COL_code, aCodeInstance.getCode());
+        values.put(COL_typicalValues, aCodeInstance.getTypicalValues());
+        values.put(COL_description, aCodeInstance.getDescription());
 
         SQLiteDatabase db = this.getWritableDatabase();
 
@@ -170,26 +172,64 @@ public class CodeIndexDBMGR extends SQLiteOpenHelper {
         db.close();
     }
 
-    public CodeIndexDB findCodeIndexEntry(String code) {
+    public List<CodeInstance> findAllCodeIndexEntries(){
+
+        List<CodeInstance> list = new ArrayList<CodeInstance>();
+
+        String query = "Select * FROM " + TBL;
+
+        SQLiteDatabase db = this.getReadableDatabase();
+
+        Cursor cursor = db.rawQuery(query, null);
+
+        CodeInstance codeInstance;
+
+        if (cursor.moveToFirst()) {
+            cursor.moveToFirst();
+
+            for (int i=0; i<cursor.getCount();i++) {
+
+                codeInstance = new CodeInstance();
+                codeInstance.setCode(cursor.getString(0));
+                codeInstance.setTypicalValues(cursor.getString(1));
+                codeInstance.setDescription(cursor.getString(2));
+
+
+                list.add(codeInstance);
+                cursor.moveToNext();
+            }
+            cursor.close();
+        } else {
+            codeInstance = null;
+        }
+        db.close();
+
+
+
+        return list;
+    }
+
+
+    public CodeInstance findCodeIndexEntry(String code) {
         String query = "Select * FROM " + TBL + " WHERE " + COL_code + " =  \"" + code + "\"";
 
         SQLiteDatabase db = this.getReadableDatabase();
 
         Cursor cursor = db.rawQuery(query, null);
 
-        CodeIndexDB codeIndexDB = new CodeIndexDB();
+        CodeInstance CodeInstance = new CodeInstance();
 
         if (cursor.moveToFirst()) {
             cursor.moveToFirst();
-            codeIndexDB.setCode(cursor.getString(0));
-            codeIndexDB.setTypicalValues(cursor.getString(1));
-            codeIndexDB.setDescription(cursor.getString(2));
+            CodeInstance.setCode(cursor.getString(0));
+            CodeInstance.setTypicalValues(cursor.getString(1));
+            CodeInstance.setDescription(cursor.getString(2));
             cursor.close();
         } else {
-            codeIndexDB = null;
+            CodeInstance = null;
         }
         db.close();
-        return codeIndexDB;
+        return CodeInstance;
     }
 
     public boolean removeCodeIndexEntry(String code) {
@@ -202,12 +242,12 @@ public class CodeIndexDBMGR extends SQLiteOpenHelper {
 
         Cursor cursor = db.rawQuery(query, null);
 
-        CodeIndexDB codeIndexDB = new CodeIndexDB();
+        CodeInstance CodeInstance = new CodeInstance();
 
         if (cursor.moveToFirst()) {
-            codeIndexDB.setCode(cursor.getString(0));
+            CodeInstance.setCode(cursor.getString(0));
             db.delete(TBL, COL_code + " = ?",
-                    new String[] { String.valueOf(codeIndexDB.getCode()) });
+                    new String[] { String.valueOf(CodeInstance.getCode()) });
             cursor.close();
             result = true;
         }

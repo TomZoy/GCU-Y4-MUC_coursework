@@ -12,13 +12,16 @@
     android:padding="0dp">
 
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:map="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/map"
         tools:context=".MapsActivity"
         android:name="com.google.android.gms.maps.SupportMapFragment"
-        android:layout_margin="0dp" />
+        android:layout_margin="0dp"
+        map:cameraZoom="1"
+        />
 
     <TextView
         android:text="mapView placeholder"

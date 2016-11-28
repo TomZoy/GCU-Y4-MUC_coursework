@@ -6,7 +6,7 @@ import java.io.Serializable;
  * code taken and modified from Lab5
  */
 
-public class CodeIndexDB implements Serializable {
+public class CodeInstance implements Serializable {
 
 // *********************************************
 // Declare variables etc.
@@ -50,7 +50,7 @@ public class CodeIndexDB implements Serializable {
     @Override
     public String toString() {
         String codeIndexData;
-        codeIndexData = "CodeIndexDB [code=" + code;
+        codeIndexData = "CodeInstance [code=" + code;
         codeIndexData += ", typicalValues=" + typicalValues;
         codeIndexData += ", description=" + description + "]";
         return codeIndexData;

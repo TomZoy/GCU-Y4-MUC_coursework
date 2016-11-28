@@ -18,7 +18,6 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
@@ -61,7 +60,7 @@ public class Settings extends AppCompatActivity implements OnClickListener {
     private SimpleDateFormat dateFormatter;
 
     //DB
-    CodeIndexDB database;
+    CodeInstance database;
 
 
     @Override
