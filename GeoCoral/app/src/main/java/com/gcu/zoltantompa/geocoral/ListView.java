@@ -4,10 +4,8 @@ import android.app.DialogFragment;
 import android.app.FragmentManager;
 import android.app.ProgressDialog;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -17,13 +15,7 @@ import android.widget.ListAdapter;
 import android.widget.SimpleAdapter;
 import android.widget.Toast;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 
 /**
@@ -41,8 +33,8 @@ public class ListView extends AppCompatActivity {
     // URL to get JSON
     private static String url = "http://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&limit=100&minmagnitude=1&orderby=time";
 
-    private ArrayList<HashMap<String, String>> refinedEQList = new ArrayList<>();
-    public ArrayList<EarthQ> EQList= new ArrayList<EarthQ>();
+
+    public ArrayList<EarthQ> EQList;
 
     FragmentManager fmAboutDialogue;
 
@@ -53,6 +45,20 @@ public class ListView extends AppCompatActivity {
     Intent details_Screen;
 
     Toast toast;
+
+
+    /*
+    this is the update bit, this should go to the ovrewriten interface
+
+
+    * */
+
+
+
+
+
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,24 +76,42 @@ public class ListView extends AppCompatActivity {
         //bind the listView
         lv = (android.widget.ListView)findViewById(R.id.listViewList);
         lv.setTextFilterEnabled(true);
-        // Bind onclick event handler
-        lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                //toast = Toast.makeText(getApplicationContext(), "pos:"+ position +" id="+id, Toast.LENGTH_SHORT);
-                //toast.show();
 
 
-                //send the selected object to the new intent
-                details_Screen.putExtra("selEQ",EQList.get(position));
-                startActivity(details_Screen);
+
+        pcHttpJSONAsync service = new pcHttpJSONAsync(url,ListView.this) {
+            @Override
+            public void onResponseReceived(Object resultMap, ArrayList<EarthQ> resultObjList) {
+                // Updating parsed JSON data into ListView
+                ListAdapter adapter = new SimpleAdapter(
+                        targetListView, (ArrayList<HashMap<String, String>>) resultMap,
+                        R.layout.list_view_item, new String[]{"mag", "firstL","secL"},
+                        new int[]{R.id.ListtextView_mag,R.id.ListtextViewFirstL, R.id.ListtextViewSecL});
+
+                lv.setAdapter(adapter);
+
+
+                EQList = resultObjList;
+
+                // Bind onclick event handler
+                lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        //toast = Toast.makeText(getApplicationContext(), "pos:"+ position +" id="+id, Toast.LENGTH_SHORT);
+                        //toast.show();
+
+
+                        //send the selected object to the new intent
+                        details_Screen.putExtra("selEQ",EQList.get(position));
+                        startActivity(details_Screen);
+
+                    }
+                });
 
             }
-        });
+        };
+        service.execute();
 
 
-        refinedEQList = new ArrayList<>();
-
-        new pcHttpJSONAsync().execute();
     }
 
     ///inflating the menu on this activity
@@ -143,7 +167,7 @@ public class ListView extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
-
+/*
     private class pcHttpJSONAsync extends AsyncTask<Void, Void, Void> {
 
         SimpleDateFormat ft = new SimpleDateFormat ("E yyyy.MM.dd 'at' HH:mm:ss");
@@ -286,9 +310,9 @@ public class ListView extends AppCompatActivity {
             // Dismiss the progress dialog
             if (pDialog.isShowing())
                 pDialog.dismiss();
-            /**
-             * Updating parsed JSON data into ListView
-             * */
+
+             // Updating parsed JSON data into ListView
+
 
             ListAdapter adapter = new SimpleAdapter(
                     ListView.this, refinedEQList,
@@ -300,7 +324,7 @@ public class ListView extends AppCompatActivity {
         }
 
     }
-
+*/
 
 
 
