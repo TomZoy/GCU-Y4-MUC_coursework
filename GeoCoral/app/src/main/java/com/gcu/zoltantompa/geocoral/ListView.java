@@ -15,6 +15,7 @@ import android.widget.ListAdapter;
 import android.widget.SimpleAdapter;
 import android.widget.Toast;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -23,7 +24,7 @@ import java.util.HashMap;
  * and modified by me
  */
 
-public class ListView extends AppCompatActivity {
+public class ListView extends AppCompatActivity implements Serializable {
 
     private String TAG = ListView.class.getSimpleName();
 
@@ -71,7 +72,7 @@ public class ListView extends AppCompatActivity {
             public void onResponseReceived(Object resultMap, ArrayList<EarthQ> resultObjList) {
                 // Updating parsed JSON data into ListView
                 ListAdapter adapter = new SimpleAdapter(
-                        targetListView, (ArrayList<HashMap<String, String>>) resultMap,
+                        ListView.this, (ArrayList<HashMap<String, String>>) resultMap,
                         R.layout.list_view_item, new String[]{"mag", "firstL","secL"},
                         new int[]{R.id.ListtextView_mag,R.id.ListtextViewFirstL, R.id.ListtextViewSecL});
 
@@ -89,6 +90,7 @@ public class ListView extends AppCompatActivity {
 
                         //send the selected object to the new intent
                         details_Screen.putExtra("selEQ",EQList.get(position));
+                        details_Screen.putExtra("callerIntent",ListView.class.getSimpleName());
                         startActivity(details_Screen);
 
                     }

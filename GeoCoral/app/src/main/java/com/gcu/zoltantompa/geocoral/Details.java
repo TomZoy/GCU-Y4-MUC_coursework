@@ -26,6 +26,8 @@ public class Details extends AppCompatActivity{
     private ArrayList<HashMap<String, String>>  detailedEQList = new ArrayList<>();
     SimpleDateFormat ft = new SimpleDateFormat ("E yyyy.MM.dd 'at' HH:mm:ss");
 
+    private String caller;
+
     private static Map<String,Integer> iconSet;
     private static String[] labels = new String[]{
             "",
@@ -56,6 +58,8 @@ public class Details extends AppCompatActivity{
 
 
         selectedEQ = (EarthQ) this.getIntent().getSerializableExtra("selEQ");
+
+        caller = (String) this.getIntent().getSerializableExtra("callerIntent");
 
 
         initIconset();
@@ -213,8 +217,25 @@ public class Details extends AppCompatActivity{
         //toast.show();
 
         Intent list_Screen = new Intent(getApplicationContext(), ListView.class);
+        Intent map_Screen = new Intent(getApplicationContext(), MapView.class);
 
-        startActivity(list_Screen);
-        finish(); //ending .this activity
+        Log.e(TAG, " caller -> "+ caller);
+
+        //determine what the caller class was, and go back to that
+        switch (caller){
+            case "ListView":
+                startActivity(list_Screen);
+                finish(); //ending .this activity
+                break;
+            case "MapView":
+                startActivity(map_Screen);
+                finish(); //ending .this activity
+                break;
+
+            default:
+                break;
+
+        }
+
     }
 }

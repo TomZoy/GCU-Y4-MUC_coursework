@@ -3,16 +3,11 @@ package com.gcu.zoltantompa.geocoral;
 import android.app.DialogFragment;
 import android.app.FragmentManager;
 import android.content.Intent;
-import android.support.annotation.FloatRange;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ListAdapter;
-import android.widget.SimpleAdapter;
 import android.widget.Toast;
 
 
@@ -21,11 +16,12 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 
 /*
@@ -35,7 +31,7 @@ import java.util.HashMap;
  */
 
 
-public class MapView extends AppCompatActivity  implements OnMapReadyCallback{
+public class MapView extends AppCompatActivity  implements OnMapReadyCallback, OnInfoWindowClickListener{
 
     FragmentManager fmAboutDialogue;
 
@@ -124,21 +120,22 @@ public class MapView extends AppCompatActivity  implements OnMapReadyCallback{
 private void buildMarkers(ArrayList<EarthQ> EQList) {
 
     ArrayList<MarkerOptions> markerList = new ArrayList<>();
-
+    Marker tmpMarker;
 
     //iterate through the result list, and build and assign them to the map
     for (int i = 0; i < EQList.size(); i++) {
         EarthQ eq = EQList.get(i);
 
-        MarkerOptions currentMarker = new MarkerOptions()
+
+        tmpMarker = mMap.addMarker( new MarkerOptions()
                 .position(new LatLng(eq.getLatitude(), eq.getLongitude()))
                 .title("mag:"+(Float.toString(eq.getMag())) + " - " +eq.getPlace())
                 .snippet(eq.getTimeString())
-                .icon(BitmapDescriptorFactory.defaultMarker(calcMarkerColor(eq.getSig()))); //set color to match significance
+                .icon(BitmapDescriptorFactory.defaultMarker(calcMarkerColor(eq.getSig())))); //set color to match significance
+        tmpMarker.setTag(eq);
 
-        markerList.add(currentMarker);
 
-        mMap.addMarker(currentMarker);
+        mMap.setOnInfoWindowClickListener(this);
     }
 
 }
@@ -167,10 +164,20 @@ private Float calcMarkerColor(int input)
 
         mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(47.468637, 19.067642)));
 
-
-
     }
 
+    @Override
+    public void onInfoWindowClick(Marker marker) {
+
+        EarthQ eq = (EarthQ) marker.getTag();
+
+        Toast.makeText(this, "Info window clicked" + eq.getPlace(),
+                Toast.LENGTH_SHORT).show();
+
+        details_Screen.putExtra("selEQ",eq);
+        details_Screen.putExtra("callerIntent",MapView.class.getSimpleName());
+        startActivity(details_Screen);
+    }
 
 
     ///inflating the menu on this activity
@@ -226,6 +233,8 @@ private Float calcMarkerColor(int input)
         }
         return super.onOptionsItemSelected(item);
     }
+
+
 }
 
 
