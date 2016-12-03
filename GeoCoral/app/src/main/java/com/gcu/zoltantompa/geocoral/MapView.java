@@ -5,6 +5,7 @@ import android.app.FragmentManager;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
+import android.graphics.Color;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -31,10 +32,10 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
 
 import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
-import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.util.ArrayList;
 
@@ -63,7 +64,6 @@ public class MapView extends AppCompatActivity  implements OnMapReadyCallback, O
     private GoogleApiClient mGoogleApiClient;
     protected Location mLastLocation;
 
-    //private ArrayList<EarthQ> EQList;
 
     private pcHttpJSONAsync service;
 
@@ -117,34 +117,20 @@ public class MapView extends AppCompatActivity  implements OnMapReadyCallback, O
             public void onResponseReceived(Object resultMap, ArrayList<EarthQ> resultObjList) {
 
 
-               // EQList = resultObjList;
 
-                toast = Toast.makeText(getApplicationContext(), "List size!" + resultObjList.size(), Toast.LENGTH_SHORT);
-                toast.show();
 
                 buildMarkers(resultObjList);
-
-                /*
-                // Bind onclick event handler
-                lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        //toast = Toast.makeText(getApplicationContext(), "pos:"+ position +" id="+id, Toast.LENGTH_SHORT);
-                        //toast.show();
-
-
-                        //send the selected object to the new intent
-                        details_Screen.putExtra("selEQ",EQList.get(position));
-                        startActivity(details_Screen);
-
-                    }
-                });
-*/
+                showNearest(resultObjList);
             }
         };
 
         buildGoogleApiClient();
 
     }
+
+
+
+
     //initialise the Google API for the location service
     protected synchronized void buildGoogleApiClient() {
         mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -154,6 +140,7 @@ public class MapView extends AppCompatActivity  implements OnMapReadyCallback, O
                 .build();
     }
 
+    //script to set up the API and get the current location of the device
     @Override
     public void onConnected(Bundle connectionHint) {
 
@@ -166,12 +153,112 @@ public class MapView extends AppCompatActivity  implements OnMapReadyCallback, O
         } else {
             // Location permission has been granted, continue as usual.
             mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-            if (mLastLocation != null) {
-                Toast.makeText(this, "current loc; " + mLastLocation.getLatitude() + "/" + mLastLocation.getLongitude(), Toast.LENGTH_LONG).show();
-            } else {
-                Toast.makeText(this, "no location detected", Toast.LENGTH_LONG).show();
+
             }
-            }
+    }
+
+    //script to calculate the distance between two points
+    //Returns the approximate distance in meters between this location and the given location.
+    // Distance is defined using the WGS84 ellipsoid.
+    private float calcDistance(Location locFrom, Location locTo)
+    {
+        float distKm = (locFrom.distanceTo(locTo))/1000;
+        return distKm;
+    }
+
+    private void drawLine(Location from, Location to){
+        // Instantiates a new Polyline object and adds points to define a rectangle
+        PolylineOptions polypoints = new PolylineOptions()
+                .add(new LatLng(from.getLatitude(),from.getLongitude()))
+                .add(new LatLng(to.getLatitude(),to.getLongitude()))
+                .width(15)
+                .color(Color.BLUE)
+                .geodesic(true);
+
+        ;
+
+        // Get back the mutable Polyline
+        Polyline polyline = mMap.addPolyline(polypoints);
+
+    }
+
+    private void showNearest(ArrayList<EarthQ> resultObjList) {
+
+        if (mLastLocation == null) {
+            Toast.makeText(this, "no location detected", Toast.LENGTH_LONG).show();
+
+        } else {
+            Toast.makeText(this, "current loc; " + mLastLocation.getLatitude() + "/"
+                    + mLastLocation.getLongitude(), Toast.LENGTH_LONG).show();
+
+            //add marker for current location
+            Marker tmpMarker = mMap.addMarker( new MarkerOptions()
+                    .position(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()))
+                    .title("Your Current Location")
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
+
+            mMap.setOnInfoWindowClickListener(this);
+
+
+
+            float nearest[] = findNearestEQ(resultObjList);
+
+            //draw the line from current location to nearest EQ
+            Location nearestLoc = new Location("test");
+            nearestLoc.setLatitude(nearest[0]);
+            nearestLoc.setLongitude(nearest[1]);
+            drawLine(mLastLocation,nearestLoc);
+
+            LatLng midpoint = new LatLng(
+                    (nearest[0]+mLastLocation.getLatitude())/2,
+                    (nearest[1]+mLastLocation.getLongitude())/2
+            );
+
+            //use a transparent 1px & 1px box as your marker
+            BitmapDescriptor transparent = BitmapDescriptorFactory.fromResource(R.drawable.transparent);
+            MarkerOptions lineMarker = new MarkerOptions()
+                    .position(midpoint)
+                    .title("nearest EarthQuake to your location")
+                    .snippet(nearest[2]+" Km")
+                    .icon(transparent)
+                    .anchor((float) 0.5, (float) 0.5); //puts the info window on the polyline
+
+            Marker marker = mMap.addMarker(lineMarker);
+
+            //open the marker's info window
+            marker.showInfoWindow();
+
+    }
+    }
+
+    private float[] findNearestEQ(ArrayList<EarthQ> resultObjList){
+
+        toast = Toast.makeText(getApplicationContext(), "EQList size: " + resultObjList.size(), Toast.LENGTH_SHORT);
+        toast.show();
+        EarthQ nearest = null;
+        float distance = Float.MAX_VALUE;
+
+        float[] returnVales = new float[3];
+
+        for (int i=0;i<resultObjList.size();i++){
+                Location tmpLoc = new Location("tmp");
+                tmpLoc.setLatitude(resultObjList.get(i).getLatitude());
+                tmpLoc.setLongitude(resultObjList.get(i).getLongitude());
+            float dist = calcDistance(mLastLocation,tmpLoc);
+            if(dist < distance){
+                distance = dist;
+                nearest = resultObjList.get(i);
+            };
+        }
+
+        returnVales[0] = nearest.getLatitude().floatValue();
+        returnVales[1] = nearest.getLongitude().floatValue();
+        returnVales[2] = distance;
+
+        toast = Toast.makeText(getApplicationContext(), "nerast: " + nearest.getPlace() + " "+ distance, Toast.LENGTH_SHORT);
+        toast.show();
+
+        return returnVales;
     }
 
     @Override
@@ -180,7 +267,6 @@ public class MapView extends AppCompatActivity  implements OnMapReadyCallback, O
         // onConnectionFailed.
         Log.i(TAG, "Connection failed: ConnectionResult.getErrorCode() = " + result.getErrorCode());
     }
-
 
     @Override
     public void onConnectionSuspended(int cause) {
@@ -199,16 +285,11 @@ public class MapView extends AppCompatActivity  implements OnMapReadyCallback, O
         for (int i = 0; i < EQList.size(); i++) {
             EarthQ eq = EQList.get(i);
 
-            BitmapDescriptor f = BitmapDescriptorFactory.fromResource(R.drawable.alert);
-
-
             tmpMarker = mMap.addMarker( new MarkerOptions()
                     .position(new LatLng(eq.getLatitude(), eq.getLongitude()))
                     .title("mag:"+(Float.toString(eq.getMag())) + " - " +eq.getPlace())
                     .snippet(eq.getTimeString())
-                    //.icon(BitmapDescriptorFactory.defaultMarker(calcMarkerColor(eq.getSig())))); //set color to match significance
-
-                    .icon(f));
+                    .icon(BitmapDescriptorFactory.defaultMarker(calcMarkerColor(eq.getSig())))); //set color to match significance
             tmpMarker.setTag(eq);
 
 
