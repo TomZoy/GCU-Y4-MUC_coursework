@@ -3,7 +3,9 @@ package com.gcu.zoltantompa.geocoral;
 import android.app.DialogFragment;
 import android.app.FragmentManager;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.content.res.Resources;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,10 +13,14 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
+import android.location.Location;
 
 
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
@@ -23,6 +29,12 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.GoogleMap.OnInfoWindowClickListener;
+
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
+import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
+import com.google.android.gms.location.LocationServices;
 
 import java.util.ArrayList;
 
@@ -34,8 +46,10 @@ import java.util.ArrayList;
  */
 
 
-public class MapView extends AppCompatActivity  implements OnMapReadyCallback, OnInfoWindowClickListener{
+public class MapView extends AppCompatActivity  implements OnMapReadyCallback, OnInfoWindowClickListener,
+        ConnectionCallbacks, OnConnectionFailedListener{
 
+    private String TAG = Details.class.getSimpleName();
     FragmentManager fmAboutDialogue;
 
     Intent map_Screen;
@@ -46,10 +60,14 @@ public class MapView extends AppCompatActivity  implements OnMapReadyCallback, O
 
 
     private GoogleMap mMap;
+    private GoogleApiClient mGoogleApiClient;
+    protected Location mLastLocation;
 
     //private ArrayList<EarthQ> EQList;
 
     private pcHttpJSONAsync service;
+
+
 
 
     Toast toast;
@@ -59,7 +77,19 @@ public class MapView extends AppCompatActivity  implements OnMapReadyCallback, O
     private static String url = "http://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&limit=100&minmagnitude=1&orderby=time";
 
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mGoogleApiClient.connect();
+    }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (mGoogleApiClient.isConnected()) {
+            mGoogleApiClient.disconnect();
+        }
+    }
 
 
     @Override
@@ -79,11 +109,6 @@ public class MapView extends AppCompatActivity  implements OnMapReadyCallback, O
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-
-
-
-
-
 
 
 
@@ -117,44 +142,93 @@ public class MapView extends AppCompatActivity  implements OnMapReadyCallback, O
             }
         };
 
+        buildGoogleApiClient();
 
     }
-
-private void buildMarkers(ArrayList<EarthQ> EQList) {
-
-    ArrayList<MarkerOptions> markerList = new ArrayList<>();
-    Marker tmpMarker;
-
-    //iterate through the result list, and build and assign them to the map
-    for (int i = 0; i < EQList.size(); i++) {
-        EarthQ eq = EQList.get(i);
-
-
-        tmpMarker = mMap.addMarker( new MarkerOptions()
-                .position(new LatLng(eq.getLatitude(), eq.getLongitude()))
-                .title("mag:"+(Float.toString(eq.getMag())) + " - " +eq.getPlace())
-                .snippet(eq.getTimeString())
-                .icon(BitmapDescriptorFactory.defaultMarker(calcMarkerColor(eq.getSig())))); //set color to match significance
-        tmpMarker.setTag(eq);
-
-
-        mMap.setOnInfoWindowClickListener(this);
+    //initialise the Google API for the location service
+    protected synchronized void buildGoogleApiClient() {
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
     }
 
-}
-private Float calcMarkerColor(int input)
-{
-    //input: 0 - 1000, 0 is low 1000 is high
-    //output: 1 is red 100 is green, lineal in between
+    @Override
+    public void onConnected(Bundle connectionHint) {
 
-    //map it to the range
-    float f = (input/10);
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+            // Request missing location permission.
+            ActivityCompat.requestPermissions(this,
+                    new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
+                    2);
+        } else {
+            // Location permission has been granted, continue as usual.
+            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+            if (mLastLocation != null) {
+                Toast.makeText(this, "current loc; " + mLastLocation.getLatitude() + "/" + mLastLocation.getLongitude(), Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(this, "no location detected", Toast.LENGTH_LONG).show();
+            }
+            }
+    }
 
-    //map it to match color (reverse it)
-    f = 100-f;
+    @Override
+    public void onConnectionFailed(ConnectionResult result) {
+        // Refer to the javadoc for ConnectionResult to see what error codes might be returned in
+        // onConnectionFailed.
+        Log.i(TAG, "Connection failed: ConnectionResult.getErrorCode() = " + result.getErrorCode());
+    }
 
-    return f;
-}
+
+    @Override
+    public void onConnectionSuspended(int cause) {
+        // The connection to Google Play services was lost for some reason. We call connect() to
+        // attempt to re-establish the connection.
+        Log.i(TAG, "Connection suspended");
+        mGoogleApiClient.connect();
+    }
+
+    private void buildMarkers(ArrayList<EarthQ> EQList) {
+
+        ArrayList<MarkerOptions> markerList = new ArrayList<>();
+        Marker tmpMarker;
+
+        //iterate through the result list, and build and assign them to the map
+        for (int i = 0; i < EQList.size(); i++) {
+            EarthQ eq = EQList.get(i);
+
+            BitmapDescriptor f = BitmapDescriptorFactory.fromResource(R.drawable.alert);
+
+
+            tmpMarker = mMap.addMarker( new MarkerOptions()
+                    .position(new LatLng(eq.getLatitude(), eq.getLongitude()))
+                    .title("mag:"+(Float.toString(eq.getMag())) + " - " +eq.getPlace())
+                    .snippet(eq.getTimeString())
+                    //.icon(BitmapDescriptorFactory.defaultMarker(calcMarkerColor(eq.getSig())))); //set color to match significance
+
+                    .icon(f));
+            tmpMarker.setTag(eq);
+
+
+            mMap.setOnInfoWindowClickListener(this);
+        }
+
+    }
+    private Float calcMarkerColor(int input)
+    {
+        //input: 0 - 1000, 0 is low 1000 is high
+        //output: 1 is red 100 is green, lineal in between
+
+        //map it to the range
+        float f = (input/10);
+
+        //map it to match color (reverse it)
+        f = 100-f;
+
+        return f;
+    }
 
 
 
@@ -188,6 +262,8 @@ private Float calcMarkerColor(int input)
         mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(47.468637, 19.067642)));
 
     }
+
+
 
     @Override
     public void onInfoWindowClick(Marker marker) {
@@ -225,7 +301,7 @@ private Float calcMarkerColor(int input)
                 toast = Toast.makeText(getApplicationContext(), "List option Clicked!", Toast.LENGTH_SHORT);
                 toast.show();
                 startActivity(list_Screen);
-                finish(); //ending .this activity
+                this.  finish(); //ending .this activity
                 return true;
 
             case R.id.menu_codeindex:
@@ -259,33 +335,3 @@ private Float calcMarkerColor(int input)
 
 
 }
-
-
-/*
-this is temp. here, copied from the official android site;
-https://developers.google.com/maps/documentation/android-api/start
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
-
-    private GoogleMap mMap;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_maps);
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
-    }
-
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
-
-        // Add a marker in Sydney, Australia, and move the camera.
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-    }
-}
-
-*/

@@ -114,6 +114,7 @@ public class Details extends AppCompatActivity{
 
                         s = ft.format(tmpDate1) + " (GMT"+GMT1+")";
                         icon = iconSet.get("event");
+
                         break;
 
                     case 1:
@@ -177,6 +178,8 @@ public class Details extends AppCompatActivity{
                     Details.this, detailedEQList,
                     R.layout.details_view_item, new String[]{"icon", "firstL","secL"},
                     new int[]{R.id.details_view_icon,R.id.detailsViewFirstL, R.id.detailsViewSecL});
+
+
 
             lv.setAdapter(adapter);
 
