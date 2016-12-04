@@ -174,7 +174,7 @@ public class MapView extends AppCompatActivity  implements OnMapReadyCallback, O
                 .add(new LatLng(to.getLatitude(),to.getLongitude()))
                 .width(15)
                 .color(Color.BLUE)
-                .geodesic(true);
+                .geodesic(false);
 
         ;
 
@@ -220,7 +220,7 @@ public class MapView extends AppCompatActivity  implements OnMapReadyCallback, O
             MarkerOptions lineMarker = new MarkerOptions()
                     .position(midpoint)
                     .title("nearest EarthQuake to your location")
-                    .snippet(nearest[2]+" Km")
+                    .snippet("distance: "+ String.format("%.2f", nearest[2])+" Km")
                     .icon(transparent)
                     .anchor((float) 0.5, (float) 0.5); //puts the info window on the polyline
 
@@ -350,14 +350,16 @@ public class MapView extends AppCompatActivity  implements OnMapReadyCallback, O
     @Override
     public void onInfoWindowClick(Marker marker) {
 
-        EarthQ eq = (EarthQ) marker.getTag();
+        if (marker.getTag() != null) {
+            EarthQ eq = (EarthQ) marker.getTag();
 
-        Toast.makeText(this, "Info window clicked" + eq.getPlace(),
-                Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Info window clicked" + eq.getPlace(),
+                    Toast.LENGTH_SHORT).show();
 
-        details_Screen.putExtra("selEQ",eq);
-        details_Screen.putExtra("callerIntent",MapView.class.getSimpleName());
-        startActivity(details_Screen);
+            details_Screen.putExtra("selEQ", eq);
+            details_Screen.putExtra("callerIntent", MapView.class.getSimpleName());
+            startActivity(details_Screen);
+        }
     }
 
 
