@@ -4,10 +4,12 @@ import android.app.DialogFragment;
 import android.app.FragmentManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.Bundle;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -16,8 +18,6 @@ import android.view.View;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-
-import static android.R.id.content;
 
 /**
  * Created by TomZoy on 2016-12-03.
@@ -70,6 +70,8 @@ public class ChartView extends AppCompatActivity{
 
 
 
+                //adding points to plot
+                //except the first and last points, points added twice, for drawing lines
                 content.points.add(resultObjList.get(resultObjList.size()-1).getSig());
 
                 for (int i=resultObjList.size()-2; i > 1 ; i--){
@@ -82,7 +84,6 @@ public class ChartView extends AppCompatActivity{
 
                 content.redraw("asyn test");
 
-                //setCont();
 
             }
         };
@@ -96,78 +97,170 @@ public class ChartView extends AppCompatActivity{
 
 private  class Chart extends View {
 
+    public String myText ="a";
+    ArrayList<Integer> points = new ArrayList<>();
+    public float[] pts;
+
+    int canvasWidth;
+
+    final int verticalOffset = 200;
+
+    private Boolean drawPoints = false;
+
+    // CONSTRUCTOR
+    public Chart(Context context) {
+        super(context);
+        setFocusable(true);
+    }
 
     public void debug(String s){
         System.out.println("debug: " + s);
     }
 
 
-    // CONSTRUCTOR
-    public Chart(Context context) {
-        super(context);
-        setFocusable(true);
-
-
-
-
-    }
-    public String myText ="a";
-    ArrayList<Integer> points = new ArrayList<>();
-
-    public void debug2(){
-        System.out.println("debug2 : " + points.size());
-    }
-
     public void redraw(String s)
     {
 
-       // this.getRootView().invalidate();
-        myText = s;
+        //determine scale
+        float dx = (canvasWidth - 100) / (points.size()/2); //((points.size()-2)/2)+2;
 
+        pts = new float[(points.size()*2)];
+
+
+        float x = 50;
+        int j = 0;
+
+        for(int i = 0; i<(points.size()*2);i=i+2){
+            pts[i] = x;
+            pts[i+1] = (1000+verticalOffset) - points.get(j); //re-mapping the values
+
+            j++;
+
+            if ( i == 0)
+                x = x + dx;
+
+            //if i is bigger than 1 and even, add to x
+            if ( (i % 4) == 0) {
+                x = x + dx;
+            }
+        }
+
+
+        myText = s;
         System.out.println("myText : " + myText);
 
+        drawPoints = true;
         invalidate();
     }
 
 
 
-    public float[] pts = new float[8];
+
 
 
 
     @Override
     protected void onDraw(Canvas canvas) {
 
-        //canvas.drawColor(Color.YELLOW);
 
-        Paint p = new Paint();
+        Paint pPlot = new Paint();
+        Paint pText = new Paint();
+        Paint pAxis = new Paint();
 
-        System.out.println("height: " + canvas.getHeight());
-        System.out.println("width: "+canvas.getWidth());
+        canvasWidth = canvas.getWidth();
 
-        int b = 8;
+//        System.out.println("height: " + canvas.getHeight());
+//        System.out.println("width: "+canvas.getWidth());
 
-        //float: Array of points to draw [x0 y0 x1 y1 x2 y2 ...]
-        //float[] pts = new float[b];
+        float[] axisLines = new float[24];
+        float[] axisScaleLines = new float[36];
+
+        String description1 = "This chart displays the last 100 earthquakes";
+        String description2 = "around the globe and their significance level." ;
 
 
+        //setting up the Paints
+
+        //Plot
+        pPlot.setAntiAlias(true);
+        pPlot.setColor(ContextCompat.getColor(this.getContext(), R.color.ZcolorPrimary));
+        pPlot.setStrokeWidth(2.5f);
+        //pPlot.setAlpha(0x80);
+
+        //Text
+        pText.setAntiAlias(true);
+        pText.setColor(ContextCompat.getColor(this.getContext(), R.color.ZcolorPrimaryDark));
+        pText.setStrokeWidth(4.5f);
+        pText.setTextSize(40);
+
+        //Axis
+        pAxis.setAntiAlias(true);
+        pAxis.setColor(ContextCompat.getColor(this.getContext(), R.color.ZcolorAccent));
+        pAxis.setStrokeWidth(4.5f);
 
 
+        //draw the plot
+        if(drawPoints){
+            System.out.println("drawing stuff");
+            canvas.drawLines (pts, pPlot);
+        }
 
-        // smooths
-        p.setAntiAlias(true);
-        p.setColor(Color.RED);
-        p.setStrokeWidth(4.5f);
-        p.setTextSize(240);
+        //set up the axis etc...
+            // X axis
+            axisLines[0] = 20;
+            axisLines[1] = 1000+verticalOffset;
+            axisLines[2] = canvasWidth - 20;
+            axisLines[3] = 1000+verticalOffset;
+                axisLines[4] = canvasWidth - 20;
+                axisLines[5] = 1000+verticalOffset;
+                axisLines[6] = canvasWidth - 40;
+                axisLines[7] = 990+verticalOffset;
+                axisLines[8] = canvasWidth - 20;
+                axisLines[9] = 1000+verticalOffset;
+                axisLines[10] = canvasWidth - 40;
+                axisLines[11] = 1010+verticalOffset;
 
-        // opacity
-        p.setAlpha(0x80);
+            // Y axis
+            axisLines[12] = 50;
+            axisLines[13] = 1030+verticalOffset;
+            axisLines[14] = 50;
+            axisLines[15] = 10+verticalOffset;
+                axisLines[16] = 50;
+                axisLines[17] = 10+verticalOffset;
+                axisLines[18] = 40;
+                axisLines[19] = 30+verticalOffset;
+                axisLines[20] = 50;
+                axisLines[21] = 10+verticalOffset;
+                axisLines[22] = 60;
+                axisLines[23] = 30+verticalOffset;
 
-        canvas.drawLines (pts, p);
+        //set up the axis scaleLines etc...
+        int y = (1000+verticalOffset)-100;
+        for (int i = 0; i < 35; i = i+4)
+        {
+            //x0
+            axisScaleLines[i] = 40;
+            //y0
+            axisScaleLines[i+1] = y;
+            //x1
+            axisScaleLines[i+2] = 60;
+            //y1
+            axisScaleLines[i+3] = y;
 
-        canvas.drawText("test",400,400,p);
-        canvas.drawText(myText,400,800,p);
+            y = y - 100;
+        }
 
+        canvas.drawLines (axisLines, pAxis);
+        canvas.drawLines (axisScaleLines, pAxis);
+
+        //write labels
+
+        canvas.drawText("900",70,315,pText);
+        canvas.drawText("Sig",50,200,pText);
+        canvas.drawText("time",(canvasWidth - 140),(1000+verticalOffset+50),pText);
+
+        canvas.drawText(description1,100,(1000+verticalOffset+150),pText);
+        canvas.drawText(description2,100,(1000+verticalOffset+200),pText);
     }
 
 }
