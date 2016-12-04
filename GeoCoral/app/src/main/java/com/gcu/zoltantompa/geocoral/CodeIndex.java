@@ -34,6 +34,7 @@ public class CodeIndex extends AppCompatActivity {
     Intent list_Screen;
     Intent settings_Screen;
     Intent codeList_Screen;
+    Intent chart_Screen;
 
     Toast toast;
 
@@ -52,11 +53,12 @@ public class CodeIndex extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_code_index);
 
-        //Starting a new Intents
+        //setting up new Intents
         map_Screen = new Intent(getApplicationContext(), MapView.class);
         list_Screen = new Intent(getApplicationContext(), ListView.class);
         settings_Screen = new Intent(getApplicationContext(), Settings.class);
         codeList_Screen = new Intent(getApplicationContext(), CodeIndex.class);
+        chart_Screen = new Intent(getApplicationContext(), ChartView.class);
 
         //bind UI
         debuggerText = (TextView)findViewById(R.id.debugTextBox);
@@ -71,30 +73,6 @@ public class CodeIndex extends AppCompatActivity {
     }
 
 
-/*
-this is not needed
-
-    //initialise the database
-    private void initDB(String code){
-        CodeInstance database = new CodeInstance();
-
-        //Create database handler instance
-        CodeIndexDBMGR codeIndexDBMGR = new CodeIndexDBMGR(this, "dbcodedesc.s3db",null,1);
-        try {
-            codeIndexDBMGR.dbCreate();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        // Lab 5 Retrieve Star Sign Info
-        database = codeIndexDBMGR.findCodeIndexEntry(code); //todo this is hardcoded here!!!
-
-        //debuggerText.setText(database.getDescription().toString());
-
-        typicalValuesTextBox.setText(database.getTypicalValues());
-        descriptionTextBox.setText(database.getDescription());
-
-    }
-*/
     private void initSpinner(){
 
         //Create database handler instance
@@ -175,6 +153,15 @@ this is not needed
             case R.id.menu_codeindex:
                 //this is the current option, so ignore
                 break;
+
+            case R.id.menu_chart:
+                System.out.println("Chart option Clicked!");
+                toast = Toast.makeText(getApplicationContext(), "Chart option Clicked!", Toast.LENGTH_SHORT);
+                toast.show();
+
+                startActivity(chart_Screen);
+                finish(); //ending .this activity
+                return true;
 
             case R.id.menu_settings:
                 System.out.println("Settings option Clicked!");

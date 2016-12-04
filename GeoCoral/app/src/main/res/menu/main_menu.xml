@@ -10,6 +10,10 @@
         android:enabled="true"
         android:visible="true"
         android:id="@+id/menu_list" />
+    <item android:title="Chart View"
+        android:id="@+id/menu_chart"
+        android:visible="true"
+        android:enabled="true" />
     <item android:title="Code Index"
         android:visible="true"
         android:enabled="true"

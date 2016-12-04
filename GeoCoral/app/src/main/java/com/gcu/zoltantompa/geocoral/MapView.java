@@ -58,7 +58,7 @@ public class MapView extends AppCompatActivity  implements OnMapReadyCallback, O
     Intent settings_Screen;
     Intent codeList_Screen;
     Intent details_Screen;
-
+    Intent chart_Screen;
 
     private GoogleMap mMap;
     private GoogleApiClient mGoogleApiClient;
@@ -97,12 +97,13 @@ public class MapView extends AppCompatActivity  implements OnMapReadyCallback, O
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map_view);
 
-        //Starting a new Intents
+        //setting up a new Intents
         map_Screen = new Intent(getApplicationContext(), MapView.class);
         list_Screen = new Intent(getApplicationContext(), ListView.class);
         settings_Screen = new Intent(getApplicationContext(), Settings.class);
         codeList_Screen = new Intent(getApplicationContext(), CodeIndex.class);
         details_Screen = new Intent(getApplicationContext(), Details.class);
+        chart_Screen = new Intent(getApplicationContext(), ChartView.class);
 
 
 
@@ -383,6 +384,15 @@ public class MapView extends AppCompatActivity  implements OnMapReadyCallback, O
                 toast.show();
                 startActivity(list_Screen);
                 this.  finish(); //ending .this activity
+                return true;
+
+            case R.id.menu_chart:
+                System.out.println("Chart option Clicked!");
+                toast = Toast.makeText(getApplicationContext(), "Chart option Clicked!", Toast.LENGTH_SHORT);
+                toast.show();
+
+                startActivity(chart_Screen);
+                finish(); //ending .this activity
                 return true;
 
             case R.id.menu_codeindex:

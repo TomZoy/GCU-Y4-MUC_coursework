@@ -38,6 +38,7 @@ public class Settings extends AppCompatActivity implements OnClickListener {
     Intent list_Screen;
     Intent settings_Screen;
     Intent codeList_Screen;
+    Intent chart_Screen;
 
     Toast toast;
 
@@ -73,6 +74,7 @@ public class Settings extends AppCompatActivity implements OnClickListener {
         list_Screen = new Intent(getApplicationContext(), ListView.class);
         settings_Screen = new Intent(getApplicationContext(), Settings.class);
         codeList_Screen = new Intent(getApplicationContext(), CodeIndex.class);
+        chart_Screen = new Intent(getApplicationContext(), ChartView.class);
 
         //getting back saved data
         mySavedSettings = PreferenceManager.getDefaultSharedPreferences(this);
@@ -253,6 +255,15 @@ public class Settings extends AppCompatActivity implements OnClickListener {
                 toast = Toast.makeText(getApplicationContext(), "List option Clicked!", Toast.LENGTH_SHORT);
                 toast.show();
                 startActivity(list_Screen);
+                finish(); //ending .this activity
+                return true;
+
+            case R.id.menu_chart:
+                System.out.println("Chart option Clicked!");
+                toast = Toast.makeText(getApplicationContext(), "Chart option Clicked!", Toast.LENGTH_SHORT);
+                toast.show();
+
+                startActivity(chart_Screen);
                 finish(); //ending .this activity
                 return true;
 

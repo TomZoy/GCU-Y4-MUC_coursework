@@ -23,7 +23,10 @@
         <activity android:name=".MapView" />
         <activity android:name=".ListView" />
         <activity android:name=".CodeIndex" />
-        <activity android:name=".Details"></activity>
+        <activity android:name=".Details" />
+        <activity android:name=".ChartView" />
+
+
 
 
 

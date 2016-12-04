@@ -2,39 +2,28 @@ package com.gcu.zoltantompa.geocoral;
 
 import android.app.DialogFragment;
 import android.app.FragmentManager;
-import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ListAdapter;
-import android.widget.SimpleAdapter;
 import android.widget.Toast;
 
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
+
+import static android.R.id.content;
 
 /**
- * code-fragments taken from http://www.androidhive.info/2012/01/android-json-parsing-tutorial/
- * and modified by me
+ * Created by TomZoy on 2016-12-03.
  */
 
-public class ListView extends AppCompatActivity implements Serializable {
-
-    private String TAG = ListView.class.getSimpleName();
-
-    private android.widget.ListView lv;
-
-    // URL to get JSON
-    private static String url = "http://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&limit=100&minmagnitude=1&orderby=time";
-
-    //the list of EarthQuake objects
-    public ArrayList<EarthQ> EQList;
+public class ChartView extends AppCompatActivity{
 
     FragmentManager fmAboutDialogue;
 
@@ -42,68 +31,149 @@ public class ListView extends AppCompatActivity implements Serializable {
     Intent list_Screen;
     Intent settings_Screen;
     Intent codeList_Screen;
-    Intent details_Screen;
-    Intent chart_Screen;
+
+
+
+
+    // URL to get JSON
+    private static String url = "http://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&limit=100&minmagnitude=1&orderby=time";
+
+
+    private String TAG = ListView.class.getSimpleName();
+
+    private Chart content;
+
+
 
     Toast toast;
 
-
-
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_list_view);
+        //setContentView(R.layout.activity_chart);
 
-        //setting up a new Intents
+        content = new Chart(this);
+
+        setContentView(content);
+
+        //setting up new Intents
         map_Screen = new Intent(getApplicationContext(), MapView.class);
         list_Screen = new Intent(getApplicationContext(), ListView.class);
         settings_Screen = new Intent(getApplicationContext(), Settings.class);
         codeList_Screen = new Intent(getApplicationContext(), CodeIndex.class);
-        details_Screen = new Intent(getApplicationContext(), Details.class);
-        chart_Screen = new Intent(getApplicationContext(), ChartView.class);
-
-
-        //bind the listView
-        lv = (android.widget.ListView)findViewById(R.id.listViewList);
-        lv.setTextFilterEnabled(true);
-
-
 
         pcHttpJSONAsync service = new pcHttpJSONAsync(url, this) {
             @Override
             public void onResponseReceived(Object resultMap, ArrayList<EarthQ> resultObjList) {
-                // Updating parsed JSON data into ListView
-                ListAdapter adapter = new SimpleAdapter(
-                        ListView.this, (ArrayList<HashMap<String, String>>) resultMap,
-                        R.layout.list_view_item, new String[]{"mag", "firstL","secL"},
-                        new int[]{R.id.ListtextView_mag,R.id.ListtextViewFirstL, R.id.ListtextViewSecL});
 
-                lv.setAdapter(adapter);
+                // EQList = resultObjList;
+                content.debug("This is a test");
 
 
-                EQList = resultObjList;
 
-                // Bind onclick event handler
-                lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        //toast = Toast.makeText(getApplicationContext(), "pos:"+ position +" id="+id, Toast.LENGTH_SHORT);
-                        //toast.show();
+                content.points.add(resultObjList.get(resultObjList.size()-1).getSig());
+
+                for (int i=resultObjList.size()-2; i > 1 ; i--){
+                    content.points.add(resultObjList.get(i).getSig());
+                    content.points.add(resultObjList.get(i).getSig());
+                }
+                content.points.add(resultObjList.get(0).getSig());
 
 
-                        //send the selected object to the new intent
-                        details_Screen.putExtra("selEQ",EQList.get(position));
-                        details_Screen.putExtra("callerIntent",ListView.class.getSimpleName());
-                        startActivity(details_Screen);
 
-                    }
-                });
+                content.redraw("asyn test");
+
+                //setCont();
 
             }
         };
         service.execute();
 
 
+
     }
+
+
+
+private  class Chart extends View {
+
+
+    public void debug(String s){
+        System.out.println("debug: " + s);
+    }
+
+
+    // CONSTRUCTOR
+    public Chart(Context context) {
+        super(context);
+        setFocusable(true);
+
+
+
+
+    }
+    public String myText ="a";
+    ArrayList<Integer> points = new ArrayList<>();
+
+    public void debug2(){
+        System.out.println("debug2 : " + points.size());
+    }
+
+    public void redraw(String s)
+    {
+
+       // this.getRootView().invalidate();
+        myText = s;
+
+        System.out.println("myText : " + myText);
+
+        invalidate();
+    }
+
+
+
+    public float[] pts = new float[8];
+
+
+
+    @Override
+    protected void onDraw(Canvas canvas) {
+
+        //canvas.drawColor(Color.YELLOW);
+
+        Paint p = new Paint();
+
+        System.out.println("height: " + canvas.getHeight());
+        System.out.println("width: "+canvas.getWidth());
+
+        int b = 8;
+
+        //float: Array of points to draw [x0 y0 x1 y1 x2 y2 ...]
+        //float[] pts = new float[b];
+
+
+
+
+
+        // smooths
+        p.setAntiAlias(true);
+        p.setColor(Color.RED);
+        p.setStrokeWidth(4.5f);
+        p.setTextSize(240);
+
+        // opacity
+        p.setAlpha(0x80);
+
+        canvas.drawLines (pts, p);
+
+        canvas.drawText("test",400,400,p);
+        canvas.drawText(myText,400,800,p);
+
+    }
+
+}
+
+
+
 
     ///inflating the menu on this activity
     @Override
@@ -127,6 +197,14 @@ public class ListView extends AppCompatActivity implements Serializable {
                 return true;
 
             case R.id.menu_list:
+                System.out.println("List option Clicked!");
+                toast = Toast.makeText(getApplicationContext(), "List option Clicked!", Toast.LENGTH_SHORT);
+                toast.show();
+                startActivity(list_Screen);
+                finish(); //ending .this activity
+                return true;
+
+            case R.id.menu_chart:
                 //this is the current option, so ignore
                 break;
 
@@ -135,15 +213,6 @@ public class ListView extends AppCompatActivity implements Serializable {
                 toast = Toast.makeText(getApplicationContext(), "CodeList option Clicked!", Toast.LENGTH_SHORT);
                 toast.show();
                 startActivity(codeList_Screen);
-                finish(); //ending .this activity
-                return true;
-
-            case R.id.menu_chart:
-                System.out.println("Chart option Clicked!");
-                toast = Toast.makeText(getApplicationContext(), "Chart option Clicked!", Toast.LENGTH_SHORT);
-                toast.show();
-
-                startActivity(chart_Screen);
                 finish(); //ending .this activity
                 return true;
 
@@ -171,5 +240,5 @@ public class ListView extends AppCompatActivity implements Serializable {
 
 
 
-}
 
+}

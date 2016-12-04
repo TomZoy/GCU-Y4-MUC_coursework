@@ -77,23 +77,14 @@ public abstract class pcHttpJSONAsync extends AsyncTask<Void, Void, Void> implem
                     JSONObject JsonNProperties = JsonNode.getJSONObject("properties");
                     JSONObject JsonNGeometry = JsonNode.getJSONObject("geometry");
 
-
-                    Log.e(TAG, " id - " + JsonNode.getString("id"));
                     String tmpId = JsonNode.getString("id");
 
-
-                    Log.e(TAG, " place - " + JsonNProperties.getString("place"));
                     String tmpFirstL = JsonNProperties.getString("place");
-
-                    Log.e(TAG, " mag - " + JsonNProperties.getString("mag"));
 
                     String tmpMag = String.format(java.util.Locale.UK,"%.2f", Float.parseFloat(JsonNProperties.getString("mag"))); //= cc.getString("mag");
 
-                    Log.e(TAG, " time - " + JsonNProperties.getString("time"));
                     Date tmpDate = new Date(Long.parseLong(JsonNProperties.getString("time")));
-                    Log.e(TAG, " time2 - " + ft.format(tmpDate));
-                    Log.e(TAG, " timeZone - " + JsonNProperties.getString("tz"));
-                    Log.e(TAG, " timeZone2 - " + (Float.parseFloat(JsonNProperties.getString("tz"))/60));
+
                     Float tz = Float.parseFloat(JsonNProperties.getString("tz"))/60;
                     String GMT = (tz > 0) ? "+"+tz : Float.toString(tz);
 
