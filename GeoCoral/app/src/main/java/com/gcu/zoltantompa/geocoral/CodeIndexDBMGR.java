@@ -22,11 +22,7 @@ import java.util.Locale;
 
 public class CodeIndexDBMGR extends SQLiteOpenHelper {
 
-    /*
-        private static final String DB_PATH = "/data/data/uk.ac.gcu.bl.mondayschild/databases/";
-    private static final String DB_NAME = "starsigns.s3db";
-    private static final String TBL_STARSIGNSINFO = "starsignsinfo";
-    * */
+
 
     private static final int DB_VER = 1;
     private static final String DB_PATH = "/data/data/com.gcu.zoltantompa.geocoral/databases/";

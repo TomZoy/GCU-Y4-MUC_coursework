@@ -29,6 +29,8 @@ import android.view.View.OnClickListener;
 import android.widget.DatePicker;
 import android.widget.EditText;
 
+import com.appyvet.rangebar.RangeBar;
+
 
 public class Settings extends AppCompatActivity implements OnClickListener {
 
@@ -53,6 +55,7 @@ public class Settings extends AppCompatActivity implements OnClickListener {
     TextView LimitPeriodTill;
     Switch isRadiusFilterOn;
     TextView RadiusFilterValue;
+    RangeBar magRangeBar;
 
     TextView debuggerText;
 
@@ -82,7 +85,7 @@ public class Settings extends AppCompatActivity implements OnClickListener {
         //saveSettings.setDefaultSettings();
 
         //bind UI
-        isAudioOn = (Switch) findViewById(R.id.enableAudioSw);
+        //isAudioOn = (Switch) findViewById(R.id.enableAudioSw);
         isDayNightModeOn = (Switch) findViewById(R.id.DayNightSw);
         isLimitPeriodOn = (Switch)  findViewById(R.id.LimitPeriodSw);
         LimitPeriodFrom = (EditText) findViewById(R.id.LimitPeriodFrom);
@@ -91,6 +94,7 @@ public class Settings extends AppCompatActivity implements OnClickListener {
         LimitPeriodTill.setInputType(InputType.TYPE_NULL);
         isRadiusFilterOn = (Switch)  findViewById(R.id.RadiusFilterSw);
         RadiusFilterValue = (TextView) findViewById(R.id.RadiusFilterValue);
+        magRangeBar = (RangeBar) findViewById(R.id.magMangebar);
 
 
         debuggerText = (TextView) findViewById(R.id.debugText);
@@ -105,8 +109,27 @@ public class Settings extends AppCompatActivity implements OnClickListener {
         loadSavedSettings();
 
 
+        // **********************************************************************
+        // THIS IS EXPERIMENTAL !!!!
+        magRangeBar.setRangePinsByValue(50,80); //this works fine
+
+
+        magRangeBar.setOnRangeBarChangeListener(new RangeBar.OnRangeBarChangeListener() { //this is no cool; fires for every inbetween numbers as well
+            @Override
+            public void onRangeChangeListener(RangeBar rangeBar,
+                                              int leftPinIndex,
+                                              int rightPinIndex,
+                                              String leftPinValue,
+                                              String rightPinValue) {
+
+                toast = Toast.makeText(getApplicationContext(), "new pin values (L+R): "+ leftPinValue+ "/" +rightPinValue, Toast.LENGTH_SHORT);
+                toast.show();
+            }
+        });
+
 
         //SWITCHES; set eventlisteners and save settings change
+        /*
         isAudioOn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -114,6 +137,8 @@ public class Settings extends AppCompatActivity implements OnClickListener {
                 updateDebug();
             }
         });
+        */
+
 
         isDayNightModeOn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -213,7 +238,7 @@ public class Settings extends AppCompatActivity implements OnClickListener {
     }
 
     private void loadSavedSettings() {
-        isAudioOn.setChecked(mySavedSettings.getBoolean("SisSAudioEnabled",false)); // key, def. value (if no value set)
+        //isAudioOn.setChecked(mySavedSettings.getBoolean("SisSAudioEnabled",false)); // key, def. value (if no value set)
         isDayNightModeOn.setChecked(mySavedSettings.getBoolean("SisSDayNightEnabled",false));
         isLimitPeriodOn.setChecked(mySavedSettings.getBoolean("SisSDatePeriodEnabled",false));
         isRadiusFilterOn.setChecked(mySavedSettings.getBoolean("SisSRadiusEnabled",false));
