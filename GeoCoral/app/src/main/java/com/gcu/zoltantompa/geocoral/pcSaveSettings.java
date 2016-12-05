@@ -10,6 +10,7 @@ import java.util.Date;
 
 /**
  * code taken and modified from Lab 8
+ * This class stores values for the user-settings
  */
 
 public class pcSaveSettings extends Activity {
@@ -151,7 +152,6 @@ public class pcSaveSettings extends Activity {
             Log.e("n","Pref Manager is NULL" );
         }
 
-        //setDefaultSettings();  //todo not sure why this is here???
     }
 
     public void saveSettings(String key, boolean value) {
@@ -171,18 +171,6 @@ public class pcSaveSettings extends Activity {
         editor.putInt(key, value);
         editor.commit();
     }
-
-    /*
-    public void setDefaultSettings(){
-        saveSettings("SisSAudioEnabled", false);
-        saveSettings("SisSDayNightEnabled", false);
-        saveSettings("SisSDatePeriodEnabled", false);
-        saveSettings("SPeriodFrom", null);
-        saveSettings("SPeriodTill", null);
-        saveSettings("SisSRadiusEnabled", false);
-        saveSettings("SRadiusKm", 150);
-    }
-*/
 
 
 }

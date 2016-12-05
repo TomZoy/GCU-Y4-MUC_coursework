@@ -22,9 +22,13 @@ import java.util.HashMap;
 /**
  * code-fragments taken from http://www.androidhive.info/2012/01/android-json-parsing-tutorial/
  * and modified by me
+ *
+ * Class that drives the List-View option
  */
 
 public class ListView extends AppCompatActivity implements Serializable {
+
+    boolean debugEnabled = false;
 
     private String TAG = ListView.class.getSimpleName();
 
@@ -48,7 +52,7 @@ public class ListView extends AppCompatActivity implements Serializable {
 
     Toast toast;
 
-    pcQueryUrlBuilder urlBuilder;
+    pcQueryUrlBuilder urlBuilder;   //variable for the dynamic url generator
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,9 +72,12 @@ public class ListView extends AppCompatActivity implements Serializable {
         lv = (android.widget.ListView)findViewById(R.id.listViewList);
         lv.setTextFilterEnabled(true);
 
+        //get and instance of the urlBuilder class and generate the url
         urlBuilder = new pcQueryUrlBuilder(this);
 
+        //async task to read the data-feed
         pcHttpJSONAsync service = new pcHttpJSONAsync(urlBuilder.getFinalURL(), this) {
+            //call back method from interface
             @Override
             public void onResponseReceived(Object resultMap, ArrayList<EarthQ> resultObjList) {
                 // Updating parsed JSON data into ListView
@@ -87,9 +94,10 @@ public class ListView extends AppCompatActivity implements Serializable {
                 // Bind onclick event handler
                 lv.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        //toast = Toast.makeText(getApplicationContext(), "pos:"+ position +" id="+id, Toast.LENGTH_SHORT);
-                        //toast.show();
-
+                        if (debugEnabled) {
+                            toast = Toast.makeText(getApplicationContext(), "pos:" + position + " id=" + id, Toast.LENGTH_SHORT);
+                            toast.show();
+                        }
 
                         //send the selected object to the new intent
                         details_Screen.putExtra("selEQ",EQList.get(position));
@@ -101,6 +109,8 @@ public class ListView extends AppCompatActivity implements Serializable {
 
             }
         };
+
+        //run the async task
         service.execute();
 
 
@@ -120,9 +130,11 @@ public class ListView extends AppCompatActivity implements Serializable {
 
         switch(item.getItemId()) {
             case R.id.menu_map:
-                System.out.println("Msp option Clicked!");
-                toast = Toast.makeText(getApplicationContext(), "Map option Clicked!", Toast.LENGTH_SHORT);
-                toast.show();
+                if(debugEnabled) {
+                    System.out.println("Msp option Clicked!");
+                    toast = Toast.makeText(getApplicationContext(), "Map option Clicked!", Toast.LENGTH_SHORT);
+                    toast.show();
+                }
                 startActivity(map_Screen);
                 finish(); //ending .this activity
                 return true;
@@ -132,26 +144,31 @@ public class ListView extends AppCompatActivity implements Serializable {
                 break;
 
             case R.id.menu_codeindex:
-                System.out.println("CodeList option Clicked!");
-                toast = Toast.makeText(getApplicationContext(), "CodeList option Clicked!", Toast.LENGTH_SHORT);
-                toast.show();
+                if(debugEnabled) {
+                    System.out.println("CodeList option Clicked!");
+                    toast = Toast.makeText(getApplicationContext(), "CodeList option Clicked!", Toast.LENGTH_SHORT);
+                    toast.show();
+                }
                 startActivity(codeList_Screen);
                 finish(); //ending .this activity
                 return true;
 
             case R.id.menu_chart:
-                System.out.println("Chart option Clicked!");
-                toast = Toast.makeText(getApplicationContext(), "Chart option Clicked!", Toast.LENGTH_SHORT);
-                toast.show();
-
+                if(debugEnabled) {
+                    System.out.println("Chart option Clicked!");
+                    toast = Toast.makeText(getApplicationContext(), "Chart option Clicked!", Toast.LENGTH_SHORT);
+                    toast.show();
+                }
                 startActivity(chart_Screen);
                 finish(); //ending .this activity
                 return true;
 
             case R.id.menu_settings:
-                System.out.println("Settings option Clicked!");
-                toast = Toast.makeText(getApplicationContext(), "Settings option Clicked!", Toast.LENGTH_SHORT);
-                toast.show();
+                if(debugEnabled) {
+                    System.out.println("Settings option Clicked!");
+                    toast = Toast.makeText(getApplicationContext(), "Settings option Clicked!", Toast.LENGTH_SHORT);
+                    toast.show();
+                }
                 startActivity(settings_Screen);
                 finish(); //ending .this activity
                 return true;
@@ -169,8 +186,4 @@ public class ListView extends AppCompatActivity implements Serializable {
         return super.onOptionsItemSelected(item);
     }
 
-
-
-
 }
-

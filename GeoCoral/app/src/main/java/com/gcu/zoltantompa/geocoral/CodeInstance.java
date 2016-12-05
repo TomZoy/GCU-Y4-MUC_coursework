@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 /**
  * code taken and modified from Lab5
+ * This is a storage class for instances from the database
  */
 
 public class CodeInstance implements Serializable {
@@ -25,23 +26,18 @@ public class CodeInstance implements Serializable {
     public String getCode() {
         return code;
     }
-
     public void setCode(String code) {
         this.code = code;
     }
-
     public String getTypicalValues() {
         return typicalValues;
     }
-
     public void setTypicalValues(String typicalValues) {
         this.typicalValues = typicalValues;
     }
-
     public String getDescription() {
         return description;
     }
-
     public void setDescription(String description) {
         this.description = description;
     }
@@ -55,7 +51,4 @@ public class CodeInstance implements Serializable {
         codeIndexData += ", description=" + description + "]";
         return codeIndexData;
     }
-
-
-
 }

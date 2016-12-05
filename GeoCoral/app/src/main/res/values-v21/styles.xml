@@ -20,8 +20,11 @@
         <!-- Inactive track color(30% transparency) -->
         <item name="android:colorForeground">@color/ZcolorAccent</item>
 
+        <!-- inflated menu background -->
+        <item name="android:popupMenuStyle">@style/MyApp.PopupMenu</item>
+    </style>
 
-
-
+    <style name="MyApp.PopupMenu" parent="android:Widget.Holo.Light.ListPopupWindow">
+        <item name="android:popupBackground">@color/ZcolorBG2</item>
     </style>
 </resources>

@@ -5,13 +5,12 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
- * Created by TomZoy on 2016-11-24.
  * Object-definition for earthquakes
  */
 
 public class EarthQ implements Serializable{
 
-    //declaring variales as Obejct-type, so they can be nullable
+    //declaring variables as Obejct-type, so they are nullable
     private String id;
     private Float mag;
     private String place;
@@ -20,7 +19,7 @@ public class EarthQ implements Serializable{
 
     private Integer sig;
     private Long updated;
-    private String altert;
+    private String alert;
     private Integer feltBy;
     private String magSources;
     private Double depth;
@@ -29,11 +28,13 @@ public class EarthQ implements Serializable{
 
     SimpleDateFormat ft = new SimpleDateFormat("E yyyy.MM.dd 'at' HH:mm:ss");
 
+    //constructor
     public EarthQ(String id)
     {
         this.id = id;
     }
 
+    //getters + setters
     public Float getMag() {
         return mag;
     }
@@ -96,12 +97,12 @@ public class EarthQ implements Serializable{
         this.sig = sig;
     }
 
-    public String getAltert() {
-        return altert;
+    public String getAlert() {
+        return alert;
     }
 
-    public void setAltert(String altert) {
-        this.altert = altert;
+    public void setAlert(String alert) {
+        this.alert = alert;
     }
 
     public Integer getFeltBy() {
@@ -149,7 +150,7 @@ public class EarthQ implements Serializable{
 
 
     /*
-    *
+    *   type-description from the API
     * properties: {
         mag: Decimal,
         place: String,

@@ -41,15 +41,18 @@ import java.util.ArrayList;
 import java.util.Calendar;
 
 
-/*
-    code-base for the map used from the official site
-    https://developers.google.com/maps/documentation/android-api/start
-    and customised by myself
- */
+/**
+ *  code-base for the map used from the official site
+ *  https://developers.google.com/maps/documentation/android-api/start
+ *  and customised by myself
+ *  Class that drives the Map-View option
+**/
 
 
 public class MapView extends AppCompatActivity  implements OnMapReadyCallback, OnInfoWindowClickListener,
         ConnectionCallbacks, OnConnectionFailedListener{
+
+    boolean debugEnabled = false;
 
     private String TAG = Details.class.getSimpleName();
     FragmentManager fmAboutDialogue;
@@ -67,9 +70,7 @@ public class MapView extends AppCompatActivity  implements OnMapReadyCallback, O
 
 
     private pcHttpJSONAsync service;
-
     pcQueryUrlBuilder urlBuilder;
-
 
     Toast toast;
 
@@ -79,12 +80,14 @@ public class MapView extends AppCompatActivity  implements OnMapReadyCallback, O
     //private static String url = "http://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&limit=100&minmagnitude=1&orderby=time";
 
 
+    //start Google API for location detection
     @Override
     protected void onStart() {
         super.onStart();
         mGoogleApiClient.connect();
     }
 
+    //stop Google API
     @Override
     protected void onStop() {
         super.onStop();
@@ -108,13 +111,15 @@ public class MapView extends AppCompatActivity  implements OnMapReadyCallback, O
         chart_Screen = new Intent(getApplicationContext(), ChartView.class);
 
 
-
+        //handle the map object
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+        //get and instance of the urlBuilder class and generate the url
         urlBuilder = new pcQueryUrlBuilder(this);
 
+        //async task to read the data-feed
         service = new pcHttpJSONAsync(urlBuilder.getFinalURL(),this) {
             @Override
             public void onResponseReceived(Object resultMap, ArrayList<EarthQ> resultObjList) {
@@ -158,13 +163,14 @@ public class MapView extends AppCompatActivity  implements OnMapReadyCallback, O
 
     //script to calculate the distance between two points
     //Returns the approximate distance in meters between this location and the given location.
-    // Distance is defined using the WGS84 ellipsoid.
+    //Distance is defined using the WGS84 ellipsoid.
     private float calcDistance(Location locFrom, Location locTo)
     {
         float distKm = (locFrom.distanceTo(locTo))/1000;
         return distKm;
     }
 
+    //script to draw a line on the map between two points
     private void drawLine(Location from, Location to){
         // Instantiates a new Polyline object and adds points to define a rectangle
         PolylineOptions polypoints = new PolylineOptions()
@@ -174,13 +180,14 @@ public class MapView extends AppCompatActivity  implements OnMapReadyCallback, O
                 .color(Color.BLUE)
                 .geodesic(false);
 
-        ;
-
         // Get back the mutable Polyline
         Polyline polyline = mMap.addPolyline(polypoints);
 
     }
 
+    //script to determine device location if possible,
+    //then find the nearest EartQuake to that location
+    //draw a line between them, calculate the distance and disply it in an info box
     private void showNearest(ArrayList<EarthQ> resultObjList) {
 
         if (mLastLocation == null) {
@@ -229,15 +236,19 @@ public class MapView extends AppCompatActivity  implements OnMapReadyCallback, O
     }
     }
 
+    //script to find the nearest EarthQuake to the device's current location
     private float[] findNearestEQ(ArrayList<EarthQ> resultObjList){
 
-        toast = Toast.makeText(getApplicationContext(), "EQList size: " + resultObjList.size(), Toast.LENGTH_SHORT);
-        toast.show();
+        if (debugEnabled) {
+            toast = Toast.makeText(getApplicationContext(), "EQList size: " + resultObjList.size(), Toast.LENGTH_SHORT);
+            toast.show();
+        }
         EarthQ nearest = null;
         float distance = Float.MAX_VALUE;
 
         float[] returnVales = new float[3];
 
+        //loop thought the events, and find the nearest
         for (int i=0;i<resultObjList.size();i++){
                 Location tmpLoc = new Location("tmp");
                 tmpLoc.setLatitude(resultObjList.get(i).getLatitude());
@@ -248,14 +259,15 @@ public class MapView extends AppCompatActivity  implements OnMapReadyCallback, O
                 nearest = resultObjList.get(i);
             };
         }
-
+        //post back the coordinates plus the distance
         returnVales[0] = nearest.getLatitude().floatValue();
         returnVales[1] = nearest.getLongitude().floatValue();
         returnVales[2] = distance;
 
-        toast = Toast.makeText(getApplicationContext(), "nerast: " + nearest.getPlace() + " "+ distance, Toast.LENGTH_SHORT);
-        toast.show();
-
+        if (debugEnabled) {
+            toast = Toast.makeText(getApplicationContext(), "nerast: " + nearest.getPlace() + " " + distance, Toast.LENGTH_SHORT);
+            toast.show();
+        }
         return returnVales;
     }
 
@@ -274,6 +286,7 @@ public class MapView extends AppCompatActivity  implements OnMapReadyCallback, O
         mGoogleApiClient.connect();
     }
 
+    //script to build a list of markers for the map
     private void buildMarkers(ArrayList<EarthQ> EQList) {
 
         ArrayList<MarkerOptions> markerList = new ArrayList<>();
@@ -295,6 +308,8 @@ public class MapView extends AppCompatActivity  implements OnMapReadyCallback, O
         }
 
     }
+
+    //script to calculate the event marker color from green to red
     private Float calcMarkerColor(int input)
     {
         //input: 0 - 1000, 0 is low 1000 is high
@@ -337,10 +352,12 @@ public class MapView extends AppCompatActivity  implements OnMapReadyCallback, O
         //once the map is loaded, execute the async service
         service.execute();
 
+        //position the map
         mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(47.468637, 19.067642)));
 
     }
 
+    //script to determine which map-stye to use, depending on the settings and the time of the day
     private int selectMap()
     {
         int day = R.raw.daytimemap;
@@ -370,15 +387,19 @@ public class MapView extends AppCompatActivity  implements OnMapReadyCallback, O
     }
 
 
+    //event-listener for info-window click to take to details screen
     @Override
     public void onInfoWindowClick(Marker marker) {
 
         if (marker.getTag() != null) {
+            //get the attached EQ object from the marker
             EarthQ eq = (EarthQ) marker.getTag();
 
-            Toast.makeText(this, "Info window clicked" + eq.getPlace(),
-                    Toast.LENGTH_SHORT).show();
-
+            if (debugEnabled) {
+                Toast.makeText(this, "Info window clicked" + eq.getPlace(),
+                        Toast.LENGTH_SHORT).show();
+            }
+            //serialise and send the selected EQ to the details activity
             details_Screen.putExtra("selEQ", eq);
             details_Screen.putExtra("callerIntent", MapView.class.getSimpleName());
             startActivity(details_Screen);
@@ -404,34 +425,41 @@ public class MapView extends AppCompatActivity  implements OnMapReadyCallback, O
                 break;
 
             case R.id.menu_list:
-                System.out.println("List option Clicked!");
-                toast = Toast.makeText(getApplicationContext(), "List option Clicked!", Toast.LENGTH_SHORT);
-                toast.show();
+                if(debugEnabled) {
+                    System.out.println("List option Clicked!");
+                    toast = Toast.makeText(getApplicationContext(), "List option Clicked!", Toast.LENGTH_SHORT);
+                    toast.show();
+                }
                 startActivity(list_Screen);
                 this.  finish(); //ending .this activity
                 return true;
 
             case R.id.menu_chart:
-                System.out.println("Chart option Clicked!");
-                toast = Toast.makeText(getApplicationContext(), "Chart option Clicked!", Toast.LENGTH_SHORT);
-                toast.show();
-
+                if(debugEnabled) {
+                    System.out.println("Chart option Clicked!");
+                    toast = Toast.makeText(getApplicationContext(), "Chart option Clicked!", Toast.LENGTH_SHORT);
+                    toast.show();
+                }
                 startActivity(chart_Screen);
                 finish(); //ending .this activity
                 return true;
 
             case R.id.menu_codeindex:
-                System.out.println("CodeList option Clicked!");
-                toast = Toast.makeText(getApplicationContext(), "CodeList option Clicked!", Toast.LENGTH_SHORT);
-                toast.show();
+                if(debugEnabled) {
+                    System.out.println("CodeList option Clicked!");
+                    toast = Toast.makeText(getApplicationContext(), "CodeList option Clicked!", Toast.LENGTH_SHORT);
+                    toast.show();
+                }
                 startActivity(codeList_Screen);
                 finish(); //ending .this activity
                 return true;
 
             case R.id.menu_settings:
-                System.out.println("Settings option Clicked!");
-                toast = Toast.makeText(getApplicationContext(), "Settings option Clicked!", Toast.LENGTH_SHORT);
-                toast.show();
+                if(debugEnabled) {
+                    System.out.println("Settings option Clicked!");
+                    toast = Toast.makeText(getApplicationContext(), "Settings option Clicked!", Toast.LENGTH_SHORT);
+                    toast.show();
+                }
                 startActivity(settings_Screen);
                 finish(); //ending .this activity
                 return true;
@@ -448,6 +476,4 @@ public class MapView extends AppCompatActivity  implements OnMapReadyCallback, O
         }
         return super.onOptionsItemSelected(item);
     }
-
-
 }

@@ -1,8 +1,6 @@
 package com.gcu.zoltantompa.geocoral;
 
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
-import android.support.v4.content.res.ResourcesCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -18,7 +16,14 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * This class displays the details of a selected event.
+ * It's accessed from the Map- or List-View
+ */
+
 public class Details extends AppCompatActivity{
+
+    boolean debugEnabled = false;
 
     private String TAG = Details.class.getSimpleName();
     private EarthQ selectedEQ;
@@ -26,9 +31,9 @@ public class Details extends AppCompatActivity{
     private ArrayList<HashMap<String, String>>  detailedEQList = new ArrayList<>();
     SimpleDateFormat ft = new SimpleDateFormat ("E yyyy.MM.dd 'at' HH:mm:ss");
 
-    private String caller;
+    private String caller; //variable to store if the caller was List or Map view, so back button works properly
 
-    private static Map<String,Integer> iconSet;
+    private static Map<String,Integer> iconSet; //a dictionary to hold the icons
     private static String[] labels = new String[]{
             "",
             "Significance level",
@@ -54,19 +59,15 @@ public class Details extends AppCompatActivity{
         backButton = (Button) findViewById(R.id.detailsView_backBTN);
         lv = (android.widget.ListView)findViewById(R.id.detailsViewList);
 
-
-
-
         selectedEQ = (EarthQ) this.getIntent().getSerializableExtra("selEQ");
-
         caller = (String) this.getIntent().getSerializableExtra("callerIntent");
-
 
         initIconset();
         buildListViewArray();
 
     }
 
+    //get the list of icons from the resources
     private void initIconset(){
         iconSet = new HashMap<String,Integer>();
 
@@ -82,12 +83,11 @@ public class Details extends AppCompatActivity{
     }
 
 
-
+    //build up the ListView (icons+labels+values)
     private void buildListViewArray()
     {
         if(selectedEQ != null)
         {
-
             labels[0] = selectedEQ.getPlace();
 
             for (int i=0; i<9 ; i++) {
@@ -122,7 +122,7 @@ public class Details extends AppCompatActivity{
                         icon = iconSet.get("sig");
                         break;
                     case 2:
-                        s = giveStringOrNA(selectedEQ.getAltert());
+                        s = giveStringOrNA(selectedEQ.getAlert());
                         icon = iconSet.get("alert");
                         break;
                     case 3:
@@ -191,6 +191,7 @@ public class Details extends AppCompatActivity{
 
     }
 
+    //accounting for type errors
     private String giveStringOrNA(Object o){
         if (o == null)
         {
@@ -213,16 +214,18 @@ public class Details extends AppCompatActivity{
     }
 
 
-
+    //back button functionality
     public void goBack(View view)
     {
-        //toast = Toast.makeText(getApplicationContext(), "Back Button Clicked!", Toast.LENGTH_SHORT);
-        //toast.show();
+        if(debugEnabled) {
+            toast = Toast.makeText(getApplicationContext(), "Back Button Clicked!", Toast.LENGTH_SHORT);
+            toast.show();
 
+            Log.e(TAG, " caller -> "+ caller);
+        }
         Intent list_Screen = new Intent(getApplicationContext(), ListView.class);
         Intent map_Screen = new Intent(getApplicationContext(), MapView.class);
 
-        Log.e(TAG, " caller -> "+ caller);
 
         //determine what the caller class was, and go back to that
         switch (caller){

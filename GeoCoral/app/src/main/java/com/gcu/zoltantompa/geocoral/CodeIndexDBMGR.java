@@ -18,6 +18,7 @@ import java.util.Locale;
 
 /**
  * code taken and modified from Lab5
+ * this calss manages the database handling
  */
 
 public class CodeIndexDBMGR extends SQLiteOpenHelper {

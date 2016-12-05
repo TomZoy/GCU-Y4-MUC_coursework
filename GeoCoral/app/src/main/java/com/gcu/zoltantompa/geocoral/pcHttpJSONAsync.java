@@ -14,8 +14,17 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 
+/**
+ *
+ * This class implements asynctask and is responsible to read the data-feed
+ * and build an object list from the results
+ */
+
 
 public abstract class pcHttpJSONAsync extends AsyncTask<Void, Void, Void> implements pcHttpJSONAsyncInterface {
+
+    boolean debugEnabled = false;
+
 
     SimpleDateFormat ft = new SimpleDateFormat ("E yyyy.MM.dd 'at' HH:mm:ss");
 
@@ -23,30 +32,26 @@ public abstract class pcHttpJSONAsync extends AsyncTask<Void, Void, Void> implem
 
     private String URL;
     private ProgressDialog pDialog;
-
-    private Context CT;
-
-    ListView targetListView;
-
+    private Context CT; //variable to hold the caller context
 
     private ArrayList<HashMap<String, String>> hashMapEQList = new ArrayList<>();
     public ArrayList<EarthQ> EQList= new ArrayList<>();
 
 
+    //constructor
     public pcHttpJSONAsync(String url, Context ct) {
 
         hashMapEQList = new ArrayList<>();
 
         CT = ct;
         URL = url;
-
     }
 
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
         // Showing progress dialog
-        pDialog = new ProgressDialog(CT);//(targetListView);
+        pDialog = new ProgressDialog(CT);
         pDialog.setMessage("Please wait...");
         pDialog.setCancelable(false);
         pDialog.show();
@@ -60,8 +65,11 @@ public abstract class pcHttpJSONAsync extends AsyncTask<Void, Void, Void> implem
         // Making a request to url and getting response
         String jsonStr = sh.makeServiceCall(URL);
 
-        Log.e(TAG, " ZZZZ - Response from url: " + jsonStr);
+        if (debugEnabled) {
+            Log.e(TAG, " ZZZZ - Response from url: " + jsonStr);
+        }
 
+        //if response is not null
         if (jsonStr != null) {
 
             try {
@@ -70,7 +78,7 @@ public abstract class pcHttpJSONAsync extends AsyncTask<Void, Void, Void> implem
                 // Getting JSON Array node
                 JSONArray results = jsonObj.getJSONArray("features");
 
-                // looping through All instances
+                // looping through All instances and reading in tha data
                 for (int i = 0; i < results.length(); i++) {
 
                     JSONObject JsonNode = results.getJSONObject(i);
@@ -112,7 +120,7 @@ public abstract class pcHttpJSONAsync extends AsyncTask<Void, Void, Void> implem
                     if(!JsonNProperties.isNull("updated"))
                         resultObj.setUpdated(JsonNProperties.getLong("updated"));
                     if(!JsonNProperties.isNull("alert"))
-                        resultObj.setAltert(JsonNProperties.getString("alert"));
+                        resultObj.setAlert(JsonNProperties.getString("alert"));
                     if(!JsonNProperties.isNull("felt"))
                         resultObj.setFeltBy(JsonNProperties.getInt("felt"));
                     if(!JsonNProperties.isNull("sources"))
@@ -141,35 +149,10 @@ public abstract class pcHttpJSONAsync extends AsyncTask<Void, Void, Void> implem
                 }
             } catch (final JSONException e) {
                 Log.e(TAG, "Json parsing error: " + e.getMessage());
-               /* runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(getApplicationContext(),
-                                "Json parsing error: " + e.getMessage(),
-                                Toast.LENGTH_LONG)
-                                .show();
-                    }
-                });
-*/
-
-                //build up the refined list from the objects
-                //refinedList
-
-
             }
+
         } else {
             Log.e(TAG, "Couldn't get json from server.");
-            /*
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    Toast.makeText(getApplicationContext(),
-                            "Couldn't get json from server. Check LogCat for possible errors!",
-                            Toast.LENGTH_LONG)
-                            .show();
-                }
-            });
-*/
         }
 
         return null;
@@ -188,6 +171,7 @@ public abstract class pcHttpJSONAsync extends AsyncTask<Void, Void, Void> implem
 
     }
 
+    //declaring interface method
     public abstract void onResponseReceived(Object resultMap, ArrayList<EarthQ> resultObj);
 
 }

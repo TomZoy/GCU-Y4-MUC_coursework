@@ -3,15 +3,15 @@ package com.gcu.zoltantompa.geocoral;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import android.provider.*;
-import android.provider.Settings;
 import android.widget.Toast;
 
 /**
- * Created by TomZoy on 2016-12-05.
+ * This class reads the user-settings and builds the URL for the data-feed accordingly
  */
 
 public class pcQueryUrlBuilder {
+
+    boolean debugEnabled = false;
 
     Toast toast;
 
@@ -41,20 +41,25 @@ public class pcQueryUrlBuilder {
     public pcQueryUrlBuilder(Context context) {
         loadSavedSettings(context);
         buildURL();
-        toast = Toast.makeText(context, finalURL, Toast.LENGTH_LONG);
-        toast.show();
+        if (debugEnabled) {
+            toast = Toast.makeText(context, finalURL, Toast.LENGTH_LONG);
+            toast.show();
+        }
     }
 
+    //public method to expose isDayNightModeOn variable
     public boolean isDayNightModeOn()
     {
         return isDayNightModeOn;
     }
 
+    //public method to calculate the url for the data-feed
     public String getFinalURL()
     {
         return finalURL;
     }
 
+    //method to build up the url, based on the settings
     private void buildURL(){
 
         finalURL = baseURL;
@@ -78,7 +83,7 @@ public class pcQueryUrlBuilder {
 
     }
 
-
+    //method to read the user-settings
     private void loadSavedSettings(Context context) {
         //getting back saved data
         mySavedSettings=PreferenceManager.getDefaultSharedPreferences(context);
@@ -101,8 +106,10 @@ public class pcQueryUrlBuilder {
         maxSig = Integer.toString(mySavedSettings.getInt("SmaxSig",1000));
         resultLimit = Integer.toString(mySavedSettings.getInt("SmaxResults",100));
 
-        toast = Toast.makeText(context, "periodfrom; " + periodFrom, Toast.LENGTH_SHORT);
-        toast.show();
+        if (debugEnabled) {
+            toast = Toast.makeText(context, "periodfrom; " + periodFrom, Toast.LENGTH_SHORT);
+            toast.show();
+        }
     }
 }
 

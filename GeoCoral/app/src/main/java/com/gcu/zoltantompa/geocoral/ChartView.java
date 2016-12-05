@@ -20,40 +20,32 @@ import android.widget.Toast;
 import java.util.ArrayList;
 
 /**
- * Created by TomZoy on 2016-12-03.
+ * This class displays a chart of significance values, using real-time values
  */
 
 public class ChartView extends AppCompatActivity{
 
-    FragmentManager fmAboutDialogue;
+    boolean debugEnabled = false;
 
+    FragmentManager fmAboutDialogue;
     Intent map_Screen;
     Intent list_Screen;
     Intent settings_Screen;
     Intent codeList_Screen;
 
-    pcQueryUrlBuilder urlBuilder;
 
-
-    //this is now dynamically generated
     // URL to get JSON
     private static String url = "http://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&limit=100&minmagnitude=1&orderby=time";
-
 
     private String TAG = ListView.class.getSimpleName();
 
     private Chart content;
 
-
-
     Toast toast;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //setContentView(R.layout.activity_chart);
-
         content = new Chart(this);
-
         setContentView(content);
 
         //setting up new Intents
@@ -62,14 +54,12 @@ public class ChartView extends AppCompatActivity{
         settings_Screen = new Intent(getApplicationContext(), Settings.class);
         codeList_Screen = new Intent(getApplicationContext(), CodeIndex.class);
 
+        //async task to read the data-feed
         pcHttpJSONAsync service = new pcHttpJSONAsync(url, this) {
+
+            //call back method from interface
             @Override
             public void onResponseReceived(Object resultMap, ArrayList<EarthQ> resultObjList) {
-
-                // EQList = resultObjList;
-                content.debug("This is a test");
-
-
 
                 //adding points to plot
                 //except the first and last points, points added twice, for drawing lines
@@ -81,13 +71,12 @@ public class ChartView extends AppCompatActivity{
                 }
                 content.points.add(resultObjList.get(0).getSig());
 
-
-
-                content.redraw("asyn test");
-
-
+                //redraw the canvas with the points supplied above
+                content.redraw();
             }
         };
+
+        //run the async task
         service.execute();
 
 
@@ -95,18 +84,17 @@ public class ChartView extends AppCompatActivity{
     }
 
 
-
+//define a class that extends View, to use have a canvas to draw to
 private  class Chart extends View {
 
-    public String myText ="a";
-    ArrayList<Integer> points = new ArrayList<>();
-    public float[] pts;
+    ArrayList<Integer> points = new ArrayList<>(); //array that holds the Y values
+    public float[] pts; //array to hold all the XY values
 
-    int canvasWidth;
+    int canvasWidth;    //hold the width of the device
 
-    final int verticalOffset = 200;
+    final int verticalOffset = 200; //offset the chart vertically
 
-    private Boolean drawPoints = false;
+    private Boolean drawPoints = false; //switch to draw the plot
 
     // CONSTRUCTOR
     public Chart(Context context) {
@@ -114,20 +102,17 @@ private  class Chart extends View {
         setFocusable(true);
     }
 
-    public void debug(String s){
-        System.out.println("debug: " + s);
-    }
-
-
-    public void redraw(String s)
+    //method called from the async task, to redraw the canvas
+    public void redraw()
     {
 
         //determine scale
         float dx = (canvasWidth - 100) / (points.size()/2); //((points.size()-2)/2)+2;
 
-        pts = new float[(points.size()*2)];
+        pts = new float[(points.size()*2)]; //instantiate the array to fit all elements
 
 
+        //build up all the XY point pairs for the plotting
         float x = 50;
         int j = 0;
 
@@ -146,12 +131,8 @@ private  class Chart extends View {
             }
         }
 
-
-        myText = s;
-        System.out.println("myText : " + myText);
-
-        drawPoints = true;
-        invalidate();
+        drawPoints = true; //enable a switch in the onDraw method
+        invalidate(); //redraw the canvas
     }
 
 
@@ -170,8 +151,11 @@ private  class Chart extends View {
 
         canvasWidth = canvas.getWidth();
 
-//        System.out.println("height: " + canvas.getHeight());
-//        System.out.println("width: "+canvas.getWidth());
+        if(debugEnabled)
+        {
+            System.out.println("height: " + canvas.getHeight());
+            System.out.println("width: " + canvas.getWidth());
+        }
 
         float[] axisLines = new float[24];
         float[] axisScaleLines = new float[36];
@@ -202,7 +186,9 @@ private  class Chart extends View {
 
         //draw the plot
         if(drawPoints){
-            System.out.println("drawing stuff");
+            if(debugEnabled) {
+                System.out.println("drawing stuff");
+            }
             canvas.drawLines (pts, pPlot);
         }
 
@@ -255,7 +241,6 @@ private  class Chart extends View {
         canvas.drawLines (axisScaleLines, pAxis);
 
         //write labels
-
         canvas.drawText("900",70,315,pText);
         canvas.drawText("Sig",50,200,pText);
         canvas.drawText("time",(canvasWidth - 140),(1000+verticalOffset+50),pText);
@@ -265,8 +250,6 @@ private  class Chart extends View {
     }
 
 }
-
-
 
 
     ///inflating the menu on this activity
@@ -283,17 +266,21 @@ private  class Chart extends View {
 
         switch(item.getItemId()) {
             case R.id.menu_map:
-                System.out.println("Msp option Clicked!");
-                toast = Toast.makeText(getApplicationContext(), "Map option Clicked!", Toast.LENGTH_SHORT);
-                toast.show();
+                if(debugEnabled) {
+                    System.out.println("Msp option Clicked!");
+                    toast = Toast.makeText(getApplicationContext(), "Map option Clicked!", Toast.LENGTH_SHORT);
+                    toast.show();
+                }
                 startActivity(map_Screen);
                 finish(); //ending .this activity
                 return true;
 
             case R.id.menu_list:
-                System.out.println("List option Clicked!");
-                toast = Toast.makeText(getApplicationContext(), "List option Clicked!", Toast.LENGTH_SHORT);
-                toast.show();
+                if(debugEnabled) {
+                    System.out.println("List option Clicked!");
+                    toast = Toast.makeText(getApplicationContext(), "List option Clicked!", Toast.LENGTH_SHORT);
+                    toast.show();
+                }
                 startActivity(list_Screen);
                 finish(); //ending .this activity
                 return true;
@@ -303,17 +290,21 @@ private  class Chart extends View {
                 break;
 
             case R.id.menu_codeindex:
-                System.out.println("CodeList option Clicked!");
-                toast = Toast.makeText(getApplicationContext(), "CodeList option Clicked!", Toast.LENGTH_SHORT);
-                toast.show();
+                if(debugEnabled) {
+                    System.out.println("CodeList option Clicked!");
+                    toast = Toast.makeText(getApplicationContext(), "CodeList option Clicked!", Toast.LENGTH_SHORT);
+                    toast.show();
+                }
                 startActivity(codeList_Screen);
                 finish(); //ending .this activity
                 return true;
 
             case R.id.menu_settings:
-                System.out.println("Settings option Clicked!");
-                toast = Toast.makeText(getApplicationContext(), "Settings option Clicked!", Toast.LENGTH_SHORT);
-                toast.show();
+                if(debugEnabled) {
+                    System.out.println("Settings option Clicked!");
+                    toast = Toast.makeText(getApplicationContext(), "Settings option Clicked!", Toast.LENGTH_SHORT);
+                    toast.show();
+                }
                 startActivity(settings_Screen);
                 finish(); //ending .this activity
                 return true;
@@ -330,9 +321,5 @@ private  class Chart extends View {
         }
         return super.onOptionsItemSelected(item);
     }
-
-
-
-
 
 }

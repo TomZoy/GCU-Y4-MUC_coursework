@@ -32,8 +32,14 @@ import android.widget.EditText;
 
 import com.appyvet.rangebar.RangeBar;
 
+/**
+ * This class drives the Settings screen
+ */
 
 public class Settings extends AppCompatActivity implements OnClickListener {
+
+    boolean debugEnabled = false;
+
 
     FragmentManager fmAboutDialogue;
 
@@ -65,7 +71,6 @@ public class Settings extends AppCompatActivity implements OnClickListener {
     TextView LimitResValueDisp;
 
 
-
     private DatePickerDialog fromDatePickerDialog;
     private DatePickerDialog toDatePickerDialog;
     private SimpleDateFormat dateFormatter;
@@ -89,10 +94,8 @@ public class Settings extends AppCompatActivity implements OnClickListener {
         //getting back saved data
         mySavedSettings = PreferenceManager.getDefaultSharedPreferences(this);
         saveSettings = new pcSaveSettings(mySavedSettings);
-        //saveSettings.setDefaultSettings();
 
         //bind UI
-        //isAudioOn = (Switch) findViewById(R.id.enableAudioSw);
         isDayNightModeOn = (Switch) findViewById(R.id.DayNightSw);
         isLimitPeriodOn = (Switch)  findViewById(R.id.LimitPeriodSw);
         LimitPeriodFrom = (EditText) findViewById(R.id.LimitPeriodFrom);
@@ -126,8 +129,13 @@ public class Settings extends AppCompatActivity implements OnClickListener {
             public boolean onTouch(View v, MotionEvent event) {
                 //tap event ended
                 if (event.getAction() == MotionEvent.ACTION_UP) {
-                    toast = Toast.makeText(getApplicationContext(), "released" + magRangeBar.getLeftPinValue() + "/" + magRangeBar.getRightPinValue(), Toast.LENGTH_SHORT);
-                    toast.show();
+                    if (debugEnabled) {
+                        toast = Toast.makeText(getApplicationContext(), "released"
+                                + magRangeBar.getLeftPinValue()
+                                + "/"
+                                + magRangeBar.getRightPinValue(), Toast.LENGTH_SHORT);
+                        toast.show();
+                    }
                     //save values
                     saveSettings.saveSettings("SminMag", Integer.parseInt(magRangeBar.getLeftPinValue()));
                     saveSettings.saveSettings("SmaxMag", Integer.parseInt(magRangeBar.getRightPinValue()));
@@ -144,8 +152,10 @@ public class Settings extends AppCompatActivity implements OnClickListener {
             public boolean onTouch(View v, MotionEvent event) {
                 //tap event ended
                 if (event.getAction() == MotionEvent.ACTION_UP) {
-                    toast = Toast.makeText(getApplicationContext(), "released" + sigRangeBar.getLeftPinValue() + "/" + sigRangeBar.getRightPinValue(), Toast.LENGTH_SHORT);
-                    toast.show();
+                    if (debugEnabled) {
+                        toast = Toast.makeText(getApplicationContext(), "released" + sigRangeBar.getLeftPinValue() + "/" + sigRangeBar.getRightPinValue(), Toast.LENGTH_SHORT);
+                        toast.show();
+                    }
                     //save values
                     saveSettings.saveSettings("SminSig", Integer.parseInt(sigRangeBar.getLeftPinValue()));
                     saveSettings.saveSettings("SmaxSig", Integer.parseInt(sigRangeBar.getRightPinValue()));
@@ -163,8 +173,10 @@ public class Settings extends AppCompatActivity implements OnClickListener {
             public boolean onTouch(View v, MotionEvent event) {
                 //tap event ended
                 if (event.getAction() == MotionEvent.ACTION_UP) {
-                    toast = Toast.makeText(getApplicationContext(), "released" + limitResultsBar.getLeftPinValue() + "/" + limitResultsBar.getRightPinValue(), Toast.LENGTH_SHORT);
-                    toast.show();
+                    if (debugEnabled) {
+                        toast = Toast.makeText(getApplicationContext(), "released" + limitResultsBar.getLeftPinValue() + "/" + limitResultsBar.getRightPinValue(), Toast.LENGTH_SHORT);
+                        toast.show();
+                    }
                     //save values
                     saveSettings.saveSettings("SmaxResults", Integer.parseInt(limitResultsBar.getRightPinValue()));
                     //update displays
@@ -263,9 +275,8 @@ public class Settings extends AppCompatActivity implements OnClickListener {
     }
 
 
-
+    //method to get the saved user settings
     private void loadSavedSettings() {
-        //isAudioOn.setChecked(mySavedSettings.getBoolean("SisSAudioEnabled",false)); // key, def. value (if no value set)
         isDayNightModeOn.setChecked(mySavedSettings.getBoolean("SisSDayNightEnabled",false));
         isLimitPeriodOn.setChecked(mySavedSettings.getBoolean("SisSDatePeriodEnabled",false));
         isRadiusFilterOn.setChecked(mySavedSettings.getBoolean("SisSRadiusEnabled",false));
@@ -302,34 +313,41 @@ public class Settings extends AppCompatActivity implements OnClickListener {
 
         switch(item.getItemId()) {
             case R.id.menu_map:
-                System.out.println("Msp option Clicked!");
-                toast = Toast.makeText(getApplicationContext(), "Map option Clicked!", Toast.LENGTH_SHORT);
-                toast.show();
+                if (debugEnabled) {
+                    System.out.println("Msp option Clicked!");
+                    toast = Toast.makeText(getApplicationContext(), "Map option Clicked!", Toast.LENGTH_SHORT);
+                    toast.show();
+                }
                 startActivity(map_Screen);
                 finish(); //ending .this activity
                 return true;
 
             case R.id.menu_list:
-                System.out.println("List option Clicked!");
-                toast = Toast.makeText(getApplicationContext(), "List option Clicked!", Toast.LENGTH_SHORT);
-                toast.show();
+                if (debugEnabled) {
+                    System.out.println("List option Clicked!");
+                    toast = Toast.makeText(getApplicationContext(), "List option Clicked!", Toast.LENGTH_SHORT);
+                    toast.show();
+                }
                 startActivity(list_Screen);
                 finish(); //ending .this activity
                 return true;
 
             case R.id.menu_chart:
-                System.out.println("Chart option Clicked!");
-                toast = Toast.makeText(getApplicationContext(), "Chart option Clicked!", Toast.LENGTH_SHORT);
-                toast.show();
-
+                if (debugEnabled) {
+                    System.out.println("Chart option Clicked!");
+                    toast = Toast.makeText(getApplicationContext(), "Chart option Clicked!", Toast.LENGTH_SHORT);
+                    toast.show();
+                }
                 startActivity(chart_Screen);
                 finish(); //ending .this activity
                 return true;
 
             case R.id.menu_codeindex:
-                System.out.println("CodeList option Clicked!");
-                toast = Toast.makeText(getApplicationContext(), "CodeList option Clicked!", Toast.LENGTH_SHORT);
-                toast.show();
+                if (debugEnabled) {
+                    System.out.println("CodeList option Clicked!");
+                    toast = Toast.makeText(getApplicationContext(), "CodeList option Clicked!", Toast.LENGTH_SHORT);
+                    toast.show();
+                }
                 startActivity(codeList_Screen);
                 finish(); //ending .this activity
                 return true;
@@ -350,8 +368,6 @@ public class Settings extends AppCompatActivity implements OnClickListener {
         }
         return super.onOptionsItemSelected(item);
     }
-
-
 
 
     //displaying the date-picker dialogues when the values are clicked/tapped

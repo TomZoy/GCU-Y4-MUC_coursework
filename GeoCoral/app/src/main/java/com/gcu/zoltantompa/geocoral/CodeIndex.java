@@ -24,9 +24,12 @@ import java.util.List;
 
 /**
  * code taken and modified from Lab5
+ * This class reads a pre-populated database, and displays description about information
  */
 
 public class CodeIndex extends AppCompatActivity {
+
+    boolean debugEnabled = false;
 
     FragmentManager fmAboutDialogue;
 
@@ -100,21 +103,20 @@ public class CodeIndex extends AppCompatActivity {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         codeListSpinner.setAdapter(adapter);
 
-
+        //set up event listener
         codeListSpinner.setOnItemSelectedListener(
                 new AdapterView.OnItemSelectedListener() {
                     @Override
                     public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
-                        Log.e("debug-on selected", " position: " + position + " id:" +id);
-
+                        if(debugEnabled) {
+                            Log.e("debug-on selected", " position: " + position + " id:" + id);
+                        }
                         typicalValuesTextBox.setText(codeList.get(position).getTypicalValues());
                         descriptionTextBox.setText(codeList.get(position).getDescription());
-
                     }
 
                     @Override
                     public void onNothingSelected(AdapterView<?> parentView) {
-                        // your code here
                     }
                 });
     }
@@ -135,17 +137,21 @@ public class CodeIndex extends AppCompatActivity {
 
         switch(item.getItemId()) {
             case R.id.menu_map:
-                System.out.println("Msp option Clicked!");
-                toast = Toast.makeText(getApplicationContext(), "Map option Clicked!", Toast.LENGTH_SHORT);
-                toast.show();
+                if(debugEnabled) {
+                    System.out.println("Msp option Clicked!");
+                    toast = Toast.makeText(getApplicationContext(), "Map option Clicked!", Toast.LENGTH_SHORT);
+                    toast.show();
+                }
                 startActivity(map_Screen);
                 finish(); //ending .this activity
                 return true;
 
             case R.id.menu_list:
-                System.out.println("List option Clicked!");
-                toast = Toast.makeText(getApplicationContext(), "List option Clicked!", Toast.LENGTH_SHORT);
-                toast.show();
+                if(debugEnabled) {
+                    System.out.println("List option Clicked!");
+                    toast = Toast.makeText(getApplicationContext(), "List option Clicked!", Toast.LENGTH_SHORT);
+                    toast.show();
+                }
                 startActivity(map_Screen);
                 finish(); //ending .this activity
                 return true;
@@ -155,18 +161,21 @@ public class CodeIndex extends AppCompatActivity {
                 break;
 
             case R.id.menu_chart:
-                System.out.println("Chart option Clicked!");
-                toast = Toast.makeText(getApplicationContext(), "Chart option Clicked!", Toast.LENGTH_SHORT);
-                toast.show();
-
+                if(debugEnabled) {
+                    System.out.println("Chart option Clicked!");
+                    toast = Toast.makeText(getApplicationContext(), "Chart option Clicked!", Toast.LENGTH_SHORT);
+                    toast.show();
+                }
                 startActivity(chart_Screen);
                 finish(); //ending .this activity
                 return true;
 
             case R.id.menu_settings:
-                System.out.println("Settings option Clicked!");
-                toast = Toast.makeText(getApplicationContext(), "Settings option Clicked!", Toast.LENGTH_SHORT);
-                toast.show();
+                if(debugEnabled) {
+                    System.out.println("Settings option Clicked!");
+                    toast = Toast.makeText(getApplicationContext(), "Settings option Clicked!", Toast.LENGTH_SHORT);
+                    toast.show();
+                }
                 startActivity(settings_Screen);
                 finish(); //ending .this activity
                 return true;

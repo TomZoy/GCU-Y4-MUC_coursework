@@ -6,7 +6,10 @@ import android.app.DialogFragment;
 import android.content.DialogInterface;
 import android.os.Bundle;
 
-/// code taken and modified from lab7
+/**
+ * code taken and modified from lab7
+ * This class sets up the About Dialogue
+ */
 
 public class pcAboutDlg extends DialogFragment{
 
