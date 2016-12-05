@@ -7,10 +7,10 @@
         <item name="colorAccent">@color/ZcolorAccent</item>
         <item name="android:colorBackground">@color/ZcolorBG</item>
         <item name="android:textColorPrimaryInverse">@color/ZcolorYellow</item>
-        <item name="android:button">@color/ZcolorAccent</item>
+        <item name="android:button">@color/ZcolorPrimaryDark</item>
 
         <!-- Active thumb color & Active track color(30% transparency) -->
-        <item name="colorControlActivated">@color/ZcolorAccent</item>
+        <item name="colorControlActivated">@color/ZcolorPrimaryDark</item>
         <!-- Inactive thumb color -->
         <item name="colorSwitchThumbNormal">@color/ZcolorAccent</item>
         <!-- Inactive track color(30% transparency) -->

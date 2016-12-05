@@ -4,14 +4,6 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <TextView
-        android:text="Chart view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/textView4"
-        android:textAlignment="center"
-        android:textSize="30sp" />
-
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"

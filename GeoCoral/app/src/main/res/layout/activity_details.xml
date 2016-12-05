@@ -16,7 +16,8 @@
         android:layout_height="match_parent"
         android:weightSum="1"
         android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true">
+        android:layout_alignParentStart="true"
+        android:baselineAligned="false">
 
         <ListView
             android:layout_width="match_parent"
@@ -28,21 +29,23 @@
             android:footerDividersEnabled="true"
             style="@style/Widget.AppCompat.ListView"
             android:id="@+id/detailsViewList"
-            android:layout_weight="0.87"
-            android:layout_height="510dp" />
+            android:layout_height="480dp"
+            android:layout_weight="0.74" />
 
             />
 
         <Button
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="34dp"
             android:id="@+id/detailsView_backBTN"
             android:visibility="visible"
             tools:text="@string/backButtonText"
-            style="@style/Widget.AppCompat.Button.Small"
+            style="@android:style/Widget.DeviceDefault.Button"
             android:text="@string/backButtonText"
             android:onClick="goBack"
-            android:layout_marginBottom="0dp" />
+            android:layout_marginBottom="0dp"
+            android:background="@color/ZcolorAccent"
+            android:layout_marginTop="20dp" />
     </LinearLayout>
 
 </RelativeLayout>

@@ -22,7 +22,7 @@
         android:visibility="invisible" />
 
     <TextView
-        android:text="1.07"
+        android:text="@string/sample_mag"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:id="@+id/ListtextView_mag"
@@ -34,7 +34,7 @@
         android:layout_marginRight="4dp" />
 
     <TextView
-        android:text="Middle of nowhere"
+        android:text="@string/list_item_first_line"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/ListtextViewFirstL"
@@ -45,7 +45,7 @@
         android:layout_marginStart="16dp" />
 
     <TextView
-        android:text="2016-15-15"
+        android:text="@string/list_item_sec_line"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/ListtextViewSecL"

@@ -1,6 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="backButtonText"><![CDATA[< back]]></string>
+    <string name="n_a">n/a</string>
+    <string name="description">Description</string>
+    <string name="typical_values">Typical Values</string>
+    <string name="listview_placeholder">listView placeholder</string>
+    <string name="mapview_placeholder">mapView placeholder</string>
+    <string name="periodText">Only show earthquakes in the period below</string>
+    <string name="km">Km</string>
+    <string name="debug">debug</string>
+    <string name="minmaxsign">Min. / Max. Significance</string>
+    <string name="map_modes_str">Day / Night map modes</string>
+    <string name="day">Day</string>
+    <string name="night">Night</string>
+    <string name="radius_label">Only show earthquakes if they were in a radius of kilometers (defined below) to my current location</string>
+    <string name="middle_of_nowhere">Middle of nowhere</string>
+    <string name="sample_date">2016-15-15</string>
+    <string name="sample_mag">1.07</string>
+    <string name="list_item_first_line">Middle of nowhere</string>
+    <string name="list_item_sec_line">2016-15-15</string>
 
     <string-array name="magValues">
         <item>no limit</item>

@@ -85,7 +85,14 @@ public abstract class pcHttpJSONAsync extends AsyncTask<Void, Void, Void> implem
 
                     Date tmpDate = new Date(Long.parseLong(JsonNProperties.getString("time")));
 
-                    Float tz = Float.parseFloat(JsonNProperties.getString("tz"))/60;
+                    Float tz;
+                    try {
+                        tz = Float.parseFloat(JsonNProperties.getString("tz"))/60;
+                    }
+                    catch(NumberFormatException ex) {
+                        tz = 0f; // default ??
+                    }
+
                     String GMT = (tz > 0) ? "+"+tz : Float.toString(tz);
 
                     String secL = ft.format(tmpDate)+" (GMT"+GMT+")";

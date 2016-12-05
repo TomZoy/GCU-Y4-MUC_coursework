@@ -14,27 +14,29 @@
 
 
     <Switch
-        android:text="Only show earthquakes in the period below"
+        android:text="@string/periodText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="22dp"
         android:id="@+id/LimitPeriodSw"
         android:switchPadding="10dp"
         android:layout_below="@+id/DayNightSw"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:textColor="@color/ZcolorAccentDark"
+        android:button="@color/ZcolorPrimaryDark" />
 
     <TextView
-        android:text="Km"
+        android:text="@string/km"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/RadiusFilterValue"
         android:layout_toEndOf="@+id/RadiusFilterValue"
         android:layout_marginBottom="11dp"
         android:id="@+id/textView2"
-        tools:text="Km" />
+        tools:text="@string/km" />
 
     <TextView
-        android:text="TextView"
+        android:text="@string/debug"
         android:layout_width="match_parent"
         android:id="@+id/debugText"
         android:layout_height="wrap_content"
@@ -49,7 +51,7 @@
         android:layout_marginTop="14dp"
         android:id="@+id/LimitPeriodFrom"
         android:textAlignment="center"
-        android:text="26-15-2016"
+        android:text=""
         android:layout_width="wrap_content"
         android:singleLine="true"
         android:hint="date from"
@@ -60,7 +62,8 @@
         android:paddingLeft="0dp"
         android:paddingRight="0dp"
         android:paddingStart="0dp"
-        android:paddingTop="0dp" />
+        android:paddingTop="0dp"
+        android:textColor="@color/ZcolorAccentDark" />
 
     <EditText
         android:layout_width="wrap_content"
@@ -69,7 +72,7 @@
         android:ems="8"
         android:id="@+id/LimitPeriodTo"
         android:textAlignment="center"
-        android:text="33-33-3333"
+        android:text=""
         android:singleLine="true"
         android:hint="date to"
         android:paddingLeft="0dp"
@@ -78,7 +81,8 @@
         android:paddingTop="0dp"
         android:paddingEnd="0dp"
         android:layout_alignTop="@+id/LimitPeriodFrom"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentEnd="true"
+        android:textColor="@color/ZcolorAccentDark" />
 
     <com.appyvet.rangebar.RangeBar
         android:id="@+id/magRangebar"
@@ -89,28 +93,25 @@
         custom:tickInterval="1"
         custom:tickEnd="10"
         custom:tickColor="@color/ZdarkYellow"
-
         custom:rangeBarColor ="@color/ZdarkYellow"
         custom:connectingLineColor ="@color/ZdarkYellow"
-
         custom:pinColor ="@color/ZcolorPrimaryDark"
         custom:selectorColor ="@color/ZcolorPrimaryDark"
-
-
-
-
+        custom:pinRadius = "16dp"
+        custom:pinMaxFont= "14dp"
 
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         android:layout_below="@+id/MagSliderLabel" />
 
     <TextView
-        android:text="Min. / Max. Significance"
+        android:text="@string/minmaxsign"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/SigSliderLabel"
         android:layout_below="@+id/magRangebar"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:textColor="@color/ZcolorAccentDark" />
 
     <com.appyvet.rangebar.RangeBar
         android:id="@+id/SigRangeBar"
@@ -121,13 +122,11 @@
         custom:tickInterval="1"
         custom:tickEnd="1000"
         custom:tickColor="@color/ZdarkYellow"
-
         custom:rangeBarColor="@color/ZdarkYellow"
         custom:connectingLineColor="@color/ZdarkYellow"
-
         custom:pinColor="@color/ZcolorPrimaryDark"
         custom:selectorColor="@color/ZcolorPrimaryDark"
-
+        custom:pinRadius = "16dp"
 
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
@@ -140,7 +139,8 @@
         android:layout_height="wrap_content"
         android:id="@+id/MagSliderLabel"
         android:layout_alignParentTop="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:textColor="@color/ZcolorAccentDark" />
 
     <TextView
         android:text="Limit results to"
@@ -148,24 +148,24 @@
         android:layout_height="wrap_content"
         android:id="@+id/resultLimit"
         android:layout_below="@+id/SigRangeBar"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:textColor="@color/ZcolorAccentDark" />
 
     <com.appyvet.rangebar.RangeBar
         android:id="@+id/limitResultsBar"
         android:layout_width="match_parent"
         android:layout_height="75dp"
+
         custom:rangeBar="false"
         custom:tickStart="1"
         custom:tickInterval="1"
         custom:tickEnd="1000"
         custom:tickColor="@color/ZdarkYellow"
-
         custom:rangeBarColor="@color/ZdarkYellow"
         custom:connectingLineColor="@color/ZdarkYellow"
-
         custom:pinColor="@color/ZcolorPrimaryDark"
         custom:selectorColor="@color/ZcolorPrimaryDark"
-
+        custom:pinRadius = "16dp"
 
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
@@ -173,17 +173,20 @@
         android:layout_alignParentStart="true" />
 
     <Switch
-        android:text="Day / Night map modes"
+        android:text="@string/map_modes_str"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/DayNightSw"
         android:switchPadding="10dp"
-        android:textOn="Day"
-        android:textOff="Night"
+        android:textOn="@string/day"
+        android:textOff="@string/night"
         android:checked="false"
         android:layout_below="@+id/limitResultsBar"
         android:layout_alignParentStart="true"
-        android:layout_marginTop="12dp" />
+        android:layout_marginTop="12dp"
+        android:textColor="@color/ZcolorAccentDark"
+        android:button="@color/ZcolorPrimaryDark"
+        android:textColorLink="@android:color/holo_orange_dark" />
 
     <EditText
         android:layout_width="wrap_content"
@@ -195,16 +198,19 @@
         android:singleLine="true"
         android:selectAllOnFocus="true"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_alignParentEnd="true"
+        android:textColor="@color/ZcolorAccentDark" />
 
     <Switch
-        android:text="Only show earthquakes if they were in a radius of kilometers (defined below) to my current location"
+        android:text="@string/radius_label"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/RadiusFilterSw"
         android:switchPadding="10dp"
         android:layout_above="@+id/textView2"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        android:textColor="@color/ZcolorAccentDark"
+        android:button="@color/ZcolorPrimaryDark" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -212,14 +218,9 @@
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:id="@+id/minMaxMagValueDisp"
-        android:textAlignment="center" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/limitResultsBar"
-        android:layout_centerHorizontal="true"
-        android:id="@+id/LimitResValueDisp" />
+        android:textAlignment="center"
+        android:textColor="@color/ZcolorAccentDark"
+        android:textStyle="normal|bold" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -227,6 +228,17 @@
         android:id="@+id/minMaxSigValueDisp"
         android:textAlignment="textEnd"
         android:layout_below="@+id/magRangebar"
-        android:layout_alignStart="@+id/LimitPeriodTo" />
+        android:layout_alignStart="@+id/LimitPeriodTo"
+        android:textColor="@color/ZcolorAccentDark"
+        android:textStyle="normal|bold" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/LimitResValueDisp"
+        android:textColor="@color/ZcolorAccentDark"
+        android:textStyle="normal|bold"
+        android:layout_below="@+id/SigRangeBar"
+        android:layout_alignEnd="@+id/SigSliderLabel" />
 
 </RelativeLayout>
