@@ -118,7 +118,6 @@ public class MapView extends AppCompatActivity  implements OnMapReadyCallback, O
         service = new pcHttpJSONAsync(urlBuilder.getFinalURL(),this) {
             @Override
             public void onResponseReceived(Object resultMap, ArrayList<EarthQ> resultObjList) {
-
                 buildMarkers(resultObjList);
                 showNearest(resultObjList);
             }

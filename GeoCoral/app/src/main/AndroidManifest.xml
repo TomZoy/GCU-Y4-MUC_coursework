@@ -26,11 +26,6 @@
         <activity android:name=".Details" />
         <activity android:name=".ChartView" />
 
-
-
-
-
-
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyDZiFDG4LNyiVsXpy0xxzHYen437rJWxeo"/>
