@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_settings"
     android:layout_width="match_parent"
@@ -11,36 +12,6 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.gcu.zoltantompa.geocoral.Settings">
 
-    <com.appyvet.rangebar.RangeBar
-        xmlns:custom="http://schemas.android.com/apk/res-auto"
-        android:id="@+id/magMangebar"
-        android:layout_width="match_parent"
-        android:layout_height="75dp"
-
-        custom:tickStart="0"
-        custom:tickInterval="1"
-        custom:tickEnd="100"
-        custom:tickColor="@color/ZcolorYellow"
-
-        custom:rangeBarColor ="@color/ZcolorYellow"
-        custom:connectingLineColor ="@color/ZcolorYellow"
-
-        custom:pinColor ="@color/ZcolorPrimaryDark"
-        custom:selectorColor ="@color/ZcolorPrimaryDark"
-
-
-
-
-
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"/>
-
-
-    <TextView
-        android:text="Min. Magnitude"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/minMagLabel" />
 
     <Switch
         android:text="Only show earthquakes in the period below"
@@ -52,19 +23,6 @@
         android:layout_below="@+id/DayNightSw"
         android:layout_centerHorizontal="true" />
 
-    <EditText
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:inputType="numberSigned"
-        android:ems="10"
-        android:layout_alignParentBottom="true"
-        android:layout_alignEnd="@+id/LimitPeriodTo"
-        android:layout_marginBottom="22dp"
-        android:id="@+id/RadiusFilterValue"
-        android:textAlignment="center"
-        android:singleLine="true"
-        android:selectAllOnFocus="true" />
-
     <TextView
         android:text="Km"
         android:layout_width="wrap_content"
@@ -75,16 +33,6 @@
         android:id="@+id/textView2"
         tools:text="Km" />
 
-    <Switch
-        android:text="Only show earthquakes if they were in a radius of kilometers (defined below) to my current location"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="74dp"
-        android:id="@+id/RadiusFilterSw"
-        android:switchPadding="10dp"
-        android:layout_below="@+id/LimitPeriodTo"
-        android:layout_alignParentStart="true" />
-
     <TextView
         android:text="TextView"
         android:layout_width="match_parent"
@@ -93,25 +41,6 @@
         android:visibility="invisible"
         android:layout_alignBaseline="@+id/LimitPeriodFrom"
         android:layout_alignBottom="@+id/LimitPeriodFrom"
-        android:layout_alignParentStart="true" />
-
-    <Spinner
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/maxMag"
-        android:entries="@array/magValues"
-        android:layout_below="@+id/maxMagLabel"
-        android:layout_alignParentEnd="true"
-        android:textAlignment="textEnd" />
-
-    <Spinner
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:entries="@array/magValues"
-        android:id="@+id/minMag"
-        android:layout_marginStart="54dp"
-        android:textAlignment="textEnd"
-        android:layout_below="@+id/minMagLabel"
         android:layout_alignParentStart="true" />
 
     <EditText
@@ -133,15 +62,6 @@
         android:paddingStart="0dp"
         android:paddingTop="0dp" />
 
-    <TextView
-        android:text="Max. Magnitude"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/maxMagLabel"
-        android:layout_marginStart="42dp"
-        android:layout_alignParentTop="true"
-        android:layout_toEndOf="@+id/minMag" />
-
     <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -160,6 +80,98 @@
         android:layout_alignTop="@+id/LimitPeriodFrom"
         android:layout_alignParentEnd="true" />
 
+    <com.appyvet.rangebar.RangeBar
+        android:id="@+id/magRangebar"
+        android:layout_width="match_parent"
+        android:layout_height="75dp"
+
+        custom:tickStart="0"
+        custom:tickInterval="1"
+        custom:tickEnd="100"
+        custom:tickColor="@color/ZdarkYellow"
+
+        custom:rangeBarColor ="@color/ZdarkYellow"
+        custom:connectingLineColor ="@color/ZdarkYellow"
+
+        custom:pinColor ="@color/ZcolorPrimaryDark"
+        custom:selectorColor ="@color/ZcolorPrimaryDark"
+
+
+
+
+
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_below="@+id/MagSliderLabel" />
+
+    <TextView
+        android:text="Min. / Max. Significance"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/SigSliderLabel"
+        android:layout_below="@+id/magRangebar"
+        android:layout_alignParentStart="true" />
+
+    <com.appyvet.rangebar.RangeBar
+        android:id="@+id/SigRangeBar"
+        android:layout_width="match_parent"
+        android:layout_height="75dp"
+
+        custom:tickStart="0"
+        custom:tickInterval="1"
+        custom:tickEnd="1000"
+        custom:tickColor="@color/ZdarkYellow"
+
+        custom:rangeBarColor="@color/ZdarkYellow"
+        custom:connectingLineColor="@color/ZdarkYellow"
+
+        custom:pinColor="@color/ZcolorPrimaryDark"
+        custom:selectorColor="@color/ZcolorPrimaryDark"
+
+
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_below="@+id/SigSliderLabel"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:text="Min. / Max. Magnitude"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/MagSliderLabel"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:text="Limit results to"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/resultLimit"
+        android:layout_below="@+id/SigRangeBar"
+        android:layout_alignParentStart="true" />
+
+    <com.appyvet.rangebar.RangeBar
+        android:id="@+id/limitResultsBar"
+        android:layout_width="match_parent"
+        android:layout_height="75dp"
+        custom:rangeBar="false"
+        custom:tickStart="1"
+        custom:tickInterval="1"
+        custom:tickEnd="1000"
+        custom:tickColor="@color/ZdarkYellow"
+
+        custom:rangeBarColor="@color/ZdarkYellow"
+        custom:connectingLineColor="@color/ZdarkYellow"
+
+        custom:pinColor="@color/ZcolorPrimaryDark"
+        custom:selectorColor="@color/ZcolorPrimaryDark"
+
+
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_below="@+id/resultLimit"
+        android:layout_alignParentStart="true" />
+
     <Switch
         android:text="Day / Night map modes"
         android:layout_width="match_parent"
@@ -169,45 +181,29 @@
         android:textOn="Day"
         android:textOff="Night"
         android:checked="false"
-        android:layout_marginTop="120dp"
-        android:layout_below="@+id/maxMag"
-        android:layout_alignParentStart="true" />
-
-    <TextView
-        android:text="Min. Significance"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/minSigLabel"
-        android:layout_below="@+id/minMag"
+        android:layout_below="@+id/limitResultsBar"
         android:layout_alignParentStart="true"
-        android:layout_marginTop="23dp" />
+        android:layout_marginTop="12dp" />
 
-    <Spinner
+    <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:entries="@array/magValues"
-        android:id="@+id/minSig"
-        android:textAlignment="textEnd"
-        android:layout_below="@+id/minSigLabel"
-        android:layout_alignStart="@+id/minMag"
-        android:layout_marginTop="11dp" />
-
-    <TextView
-        android:text="Max. Significance"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/maxSigLabel"
-        android:layout_above="@+id/minSig"
-        android:layout_alignStart="@+id/maxMagLabel" />
-
-    <Spinner
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/maxSig"
-        android:entries="@array/magValues"
-        android:textAlignment="textEnd"
-        android:layout_alignBaseline="@+id/minSig"
-        android:layout_alignBottom="@+id/minSig"
+        android:inputType="numberSigned"
+        android:ems="10"
+        android:id="@+id/RadiusFilterValue"
+        android:textAlignment="center"
+        android:singleLine="true"
+        android:selectAllOnFocus="true"
+        android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true" />
+
+    <Switch
+        android:text="Only show earthquakes if they were in a radius of kilometers (defined below) to my current location"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/RadiusFilterSw"
+        android:switchPadding="10dp"
+        android:layout_above="@+id/textView2"
+        android:layout_alignParentStart="true" />
 
 </RelativeLayout>

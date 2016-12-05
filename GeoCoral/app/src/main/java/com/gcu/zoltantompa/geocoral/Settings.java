@@ -12,6 +12,7 @@ import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.Switch;
@@ -94,7 +95,7 @@ public class Settings extends AppCompatActivity implements OnClickListener {
         LimitPeriodTill.setInputType(InputType.TYPE_NULL);
         isRadiusFilterOn = (Switch)  findViewById(R.id.RadiusFilterSw);
         RadiusFilterValue = (TextView) findViewById(R.id.RadiusFilterValue);
-        magRangeBar = (RangeBar) findViewById(R.id.magMangebar);
+        magRangeBar = (RangeBar) findViewById(R.id.magRangebar);
 
 
         debuggerText = (TextView) findViewById(R.id.debugText);
@@ -111,21 +112,34 @@ public class Settings extends AppCompatActivity implements OnClickListener {
 
         // **********************************************************************
         // THIS IS EXPERIMENTAL !!!!
+        //pre-set values
         magRangeBar.setRangePinsByValue(50,80); //this works fine
 
-
-        magRangeBar.setOnRangeBarChangeListener(new RangeBar.OnRangeBarChangeListener() { //this is no cool; fires for every inbetween numbers as well
+        //this is not used; fires for every inbetween numbers as well
+        magRangeBar.setOnRangeBarChangeListener(new RangeBar.OnRangeBarChangeListener() {
             @Override
             public void onRangeChangeListener(RangeBar rangeBar,
                                               int leftPinIndex,
                                               int rightPinIndex,
                                               String leftPinValue,
                                               String rightPinValue) {
-
-                toast = Toast.makeText(getApplicationContext(), "new pin values (L+R): "+ leftPinValue+ "/" +rightPinValue, Toast.LENGTH_SHORT);
-                toast.show();
             }
         });
+
+        magRangeBar.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
+                    toast = Toast.makeText(getApplicationContext(), "pressed in", Toast.LENGTH_SHORT);
+                    toast.show();
+                } else if (event.getAction() == MotionEvent.ACTION_UP) {
+                    toast = Toast.makeText(getApplicationContext(), "released" + magRangeBar.getLeftPinValue() + "/" + magRangeBar.getRightPinValue(), Toast.LENGTH_SHORT);
+                    toast.show();
+                }
+                return false; //make sure the event is not captured, and propagates further!
+            }
+        });
+
 
 
         //SWITCHES; set eventlisteners and save settings change
