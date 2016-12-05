@@ -49,16 +49,22 @@ public class Settings extends AppCompatActivity implements OnClickListener {
     SharedPreferences mySavedSettings;
 
     //UI variables
-    Switch isAudioOn;
+    //Switch isAudioOn;
     Switch isDayNightModeOn;
     Switch isLimitPeriodOn;
     TextView LimitPeriodFrom;
     TextView LimitPeriodTill;
     Switch isRadiusFilterOn;
     TextView RadiusFilterValue;
-    RangeBar magRangeBar;
 
-    TextView debuggerText;
+    RangeBar magRangeBar;
+    RangeBar sigRangeBar;
+    RangeBar limitResultsBar;
+    TextView minMaxMagValueDisp;
+    TextView minMaxSigValueDisp;
+    TextView LimitResValueDisp;
+
+
 
     private DatePickerDialog fromDatePickerDialog;
     private DatePickerDialog toDatePickerDialog;
@@ -95,10 +101,15 @@ public class Settings extends AppCompatActivity implements OnClickListener {
         LimitPeriodTill.setInputType(InputType.TYPE_NULL);
         isRadiusFilterOn = (Switch)  findViewById(R.id.RadiusFilterSw);
         RadiusFilterValue = (TextView) findViewById(R.id.RadiusFilterValue);
+
         magRangeBar = (RangeBar) findViewById(R.id.magRangebar);
+        sigRangeBar = (RangeBar) findViewById(R.id.SigRangeBar);
+        limitResultsBar = (RangeBar) findViewById(R.id.limitResultsBar);
+        minMaxMagValueDisp = (TextView) findViewById(R.id.minMaxMagValueDisp);
+        minMaxSigValueDisp = (TextView) findViewById(R.id.minMaxSigValueDisp);
+        LimitResValueDisp = (TextView) findViewById(R.id.LimitResValueDisp);
 
 
-        debuggerText = (TextView) findViewById(R.id.debugText);
 
         //set up the date-formatter
         dateFormatter = new SimpleDateFormat("dd-MM-yyyy", Locale.UK);
@@ -110,55 +121,69 @@ public class Settings extends AppCompatActivity implements OnClickListener {
         loadSavedSettings();
 
 
-        // **********************************************************************
-        // THIS IS EXPERIMENTAL !!!!
-        //pre-set values
-        magRangeBar.setRangePinsByValue(50,80); //this works fine
-
-        //this is not used; fires for every inbetween numbers as well
-        magRangeBar.setOnRangeBarChangeListener(new RangeBar.OnRangeBarChangeListener() {
-            @Override
-            public void onRangeChangeListener(RangeBar rangeBar,
-                                              int leftPinIndex,
-                                              int rightPinIndex,
-                                              String leftPinValue,
-                                              String rightPinValue) {
-            }
-        });
-
+        //RangeBars; set event-listeners and save settings on change + update displays
         magRangeBar.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    toast = Toast.makeText(getApplicationContext(), "pressed in", Toast.LENGTH_SHORT);
-                    toast.show();
-                } else if (event.getAction() == MotionEvent.ACTION_UP) {
+                //tap event ended
+                if (event.getAction() == MotionEvent.ACTION_UP) {
                     toast = Toast.makeText(getApplicationContext(), "released" + magRangeBar.getLeftPinValue() + "/" + magRangeBar.getRightPinValue(), Toast.LENGTH_SHORT);
                     toast.show();
+                    //save values
+                    saveSettings.saveSettings("SminMag", Integer.parseInt(magRangeBar.getLeftPinValue()));
+                    saveSettings.saveSettings("SmaxMag", Integer.parseInt(magRangeBar.getRightPinValue()));
+                    //update displays
+                    minMaxMagValueDisp.setText(magRangeBar.getLeftPinValue()
+                            + "/"
+                            + magRangeBar.getRightPinValue());
                 }
+                return false; //make sure the event is not captured, and propagates further!
+            }
+        });
+        sigRangeBar.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                //tap event ended
+                if (event.getAction() == MotionEvent.ACTION_UP) {
+                    toast = Toast.makeText(getApplicationContext(), "released" + sigRangeBar.getLeftPinValue() + "/" + sigRangeBar.getRightPinValue(), Toast.LENGTH_SHORT);
+                    toast.show();
+                    //save values
+                    saveSettings.saveSettings("SminSig", Integer.parseInt(sigRangeBar.getLeftPinValue()));
+                    saveSettings.saveSettings("SmaxSig", Integer.parseInt(sigRangeBar.getRightPinValue()));
+                    //update displays
+                    minMaxSigValueDisp.setText(sigRangeBar.getLeftPinValue()
+                            + "/"
+                            + sigRangeBar.getRightPinValue());
+                }
+                return false; //make sure the event is not captured, and propagates further!
+            }
+        });
+
+        limitResultsBar.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                //tap event ended
+                if (event.getAction() == MotionEvent.ACTION_UP) {
+                    toast = Toast.makeText(getApplicationContext(), "released" + limitResultsBar.getLeftPinValue() + "/" + limitResultsBar.getRightPinValue(), Toast.LENGTH_SHORT);
+                    toast.show();
+                    //save values
+                    saveSettings.saveSettings("SmaxResults", Integer.parseInt(limitResultsBar.getRightPinValue()));
+                    //update displays
+                    LimitResValueDisp.setText(limitResultsBar.getRightPinValue());
+                }
+
                 return false; //make sure the event is not captured, and propagates further!
             }
         });
 
 
 
-        //SWITCHES; set eventlisteners and save settings change
-        /*
-        isAudioOn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                saveSettings.saveSettings("SisSAudioEnabled", isAudioOn.isChecked());
-                updateDebug();
-            }
-        });
-        */
-
+        //SWITCHES; set event-listeners and save settings change
 
         isDayNightModeOn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 saveSettings.saveSettings("SisSDayNightEnabled", isDayNightModeOn.isChecked());
-                updateDebug();
             }
         });
 
@@ -166,7 +191,6 @@ public class Settings extends AppCompatActivity implements OnClickListener {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 saveSettings.saveSettings("SisSDatePeriodEnabled", isLimitPeriodOn.isChecked());
-                updateDebug();
             }
         });
 
@@ -174,7 +198,6 @@ public class Settings extends AppCompatActivity implements OnClickListener {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 saveSettings.saveSettings("SisSRadiusEnabled", isRadiusFilterOn.isChecked());
-                updateDebug();
             }
         });
 
@@ -194,7 +217,6 @@ public class Settings extends AppCompatActivity implements OnClickListener {
                 }
 
                 saveSettings.saveSettings("SRadiusKm",defVal);
-                updateDebug();
             }
 
             @Override
@@ -243,13 +265,6 @@ public class Settings extends AppCompatActivity implements OnClickListener {
     }
 
 
-    private void updateDebug()
-    {
-        toast = Toast.makeText(getApplicationContext(), "switch Clicked!", Toast.LENGTH_SHORT);
-        toast.show();
-
-        debuggerText.setText(mySavedSettings.getAll().toString());
-    }
 
     private void loadSavedSettings() {
         //isAudioOn.setChecked(mySavedSettings.getBoolean("SisSAudioEnabled",false)); // key, def. value (if no value set)
@@ -262,7 +277,14 @@ public class Settings extends AppCompatActivity implements OnClickListener {
         LimitPeriodFrom.setText(mySavedSettings.getString("SPeriodFrom",null));
         LimitPeriodTill.setText(mySavedSettings.getString("SPeriodTill",null));
 
-        debuggerText.setText(mySavedSettings.getAll().toString());
+        //set the rangebar min-max values
+        magRangeBar.setRangePinsByValue(mySavedSettings.getInt("SminMag",1),mySavedSettings.getInt("SmaxMag",10));
+        sigRangeBar.setRangePinsByValue(mySavedSettings.getInt("SminSig",1),mySavedSettings.getInt("SmaxSig",1000));
+        limitResultsBar.setRangePinsByValue(1,mySavedSettings.getInt("SmaxResults",100));
+        //also populate the display-fields
+        minMaxMagValueDisp.setText(Integer.toString(mySavedSettings.getInt("SminMag",1)) + "/" + Integer.toString(mySavedSettings.getInt("SmaxMag",10)));
+        minMaxSigValueDisp.setText(Integer.toString(mySavedSettings.getInt("SminSig",1)) + "/" + Integer.toString(mySavedSettings.getInt("SmaxSig",1000)));
+        LimitResValueDisp.setText(Integer.toString(mySavedSettings.getInt("SmaxResults",100)));
 
     }
 

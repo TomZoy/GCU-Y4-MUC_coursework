@@ -206,4 +206,27 @@
         android:layout_above="@+id/textView2"
         android:layout_alignParentStart="true" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/minMaxMagValueDisp"
+        android:textAlignment="center" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/limitResultsBar"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/LimitResValueDisp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/minMaxSigValueDisp"
+        android:textAlignment="textEnd"
+        android:layout_below="@+id/magRangebar"
+        android:layout_alignStart="@+id/LimitPeriodTo" />
+
 </RelativeLayout>

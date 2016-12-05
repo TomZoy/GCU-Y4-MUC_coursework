@@ -21,22 +21,60 @@ public class pcSaveSettings extends Activity {
 
     SharedPreferences pcSharedSettings;
 
-    private boolean isSAudioEnabled;
     private boolean isSDayNightEnabled;
     private boolean isSDatePeriodEnabled;
     private Date SPeriodFrom;
     private Date SPeriodTill;
     private boolean isSRadiusEnabled;
-    private  int SRadiusKm;
+    private int SRadiusKm;
+
+    private int minMagnitude;
+    private int maxMagnitude;
+    private int minSignificance;
+    private int maxSignificance;
+    private int limitResultsTo;
 
 
     //region Declare getters and setters etc.
-    public boolean getSAudioEnabled() {
-        return isSAudioEnabled;
+
+    public int getMinSignificance() {
+        return minSignificance;
     }
 
-    public void setisSAudioEnabled(boolean SAudioEnabled) {
-        this.isSAudioEnabled = SAudioEnabled;
+    public void setMinSignificance(int minSignificance) {
+        this.minSignificance = minSignificance;
+    }
+
+    public int getLimitResultsTo() {
+        return limitResultsTo;
+    }
+
+    public void setLimitResultsTo(int limitResultsTo) {
+        this.limitResultsTo = limitResultsTo;
+    }
+
+    public int getMaxMagnitude() {
+        return maxMagnitude;
+    }
+
+    public void setMaxMagnitude(int maxMagnitude) {
+        this.maxMagnitude = maxMagnitude;
+    }
+
+    public int getMaxSignificance() {
+        return maxSignificance;
+    }
+
+    public void setMaxSignificance(int maxSignificance) {
+        this.maxSignificance = maxSignificance;
+    }
+
+    public int getMinMagnitude() {
+        return minMagnitude;
+    }
+
+    public void setMinMagnitude(int minMagnitude) {
+        this.minMagnitude = minMagnitude;
     }
 
     public boolean getSDayNightEnabled() {
@@ -93,13 +131,17 @@ public class pcSaveSettings extends Activity {
 // **************************************************
 
     public pcSaveSettings (SharedPreferences mcSDPrefs){
-        setisSAudioEnabled(false);
         setisSDayNightEnabled(true);
         setSDatePeriodEnabled(false);
         setSPeriodFrom(new Date());  //todo this needs to default current date - 7days
         setSPeriodTill(new Date());
         setSRadiusEnabled(false);
         setSRadiusKm(100);
+        setMinMagnitude(-1);
+        setMaxMagnitude(10);
+        setMinSignificance(0);
+        setMaxSignificance(1000);
+        setLimitResultsTo(100);
 
         try {
             this.pcSharedSettings = mcSDPrefs;
@@ -130,6 +172,7 @@ public class pcSaveSettings extends Activity {
         editor.commit();
     }
 
+    /*
     public void setDefaultSettings(){
         saveSettings("SisSAudioEnabled", false);
         saveSettings("SisSDayNightEnabled", false);
@@ -139,7 +182,7 @@ public class pcSaveSettings extends Activity {
         saveSettings("SisSRadiusEnabled", false);
         saveSettings("SRadiusKm", 150);
     }
-
+*/
 
 
 }
