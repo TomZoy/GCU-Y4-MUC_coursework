@@ -38,6 +38,7 @@ import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 
 
 /*
@@ -67,14 +68,15 @@ public class MapView extends AppCompatActivity  implements OnMapReadyCallback, O
 
     private pcHttpJSONAsync service;
 
-
+    pcQueryUrlBuilder urlBuilder;
 
 
     Toast toast;
 
 
+    //this is now dynamically generated
     // URL to get JSON
-    private static String url = "http://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&limit=100&minmagnitude=1&orderby=time";
+    //private static String url = "http://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&limit=100&minmagnitude=1&orderby=time";
 
 
     @Override
@@ -111,14 +113,11 @@ public class MapView extends AppCompatActivity  implements OnMapReadyCallback, O
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+        urlBuilder = new pcQueryUrlBuilder(this);
 
-
-        service = new pcHttpJSONAsync(url,this) {
+        service = new pcHttpJSONAsync(urlBuilder.getFinalURL(),this) {
             @Override
             public void onResponseReceived(Object resultMap, ArrayList<EarthQ> resultObjList) {
-
-
-
 
                 buildMarkers(resultObjList);
                 showNearest(resultObjList);
@@ -189,13 +188,12 @@ public class MapView extends AppCompatActivity  implements OnMapReadyCallback, O
             Toast.makeText(this, "no location detected", Toast.LENGTH_LONG).show();
 
         } else {
-            Toast.makeText(this, "current loc; " + mLastLocation.getLatitude() + "/"
-                    + mLastLocation.getLongitude(), Toast.LENGTH_LONG).show();
 
             //add marker for current location
             Marker tmpMarker = mMap.addMarker( new MarkerOptions()
                     .position(new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude()))
                     .title("Your Current Location")
+                    .snippet(mLastLocation.getLatitude() + "/" + mLastLocation.getLongitude())
                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
 
             mMap.setOnInfoWindowClickListener(this);
@@ -324,8 +322,7 @@ public class MapView extends AppCompatActivity  implements OnMapReadyCallback, O
             // in a raw resource file.
             boolean success = mMap.setMapStyle(
                     MapStyleOptions.loadRawResourceStyle(
-                            this, R.raw.daytimemap
-                            //this, R.raw.nighttimemap
+                            this, selectMap()
                     ));
 
             if (!success) {
@@ -345,6 +342,33 @@ public class MapView extends AppCompatActivity  implements OnMapReadyCallback, O
 
     }
 
+    private int selectMap()
+    {
+        int day = R.raw.daytimemap;
+        int night = R.raw.nighttimemap;
+
+        if(urlBuilder.isDayNightModeOn)
+        {
+            //get the time on the device
+            Calendar cal = Calendar.getInstance();
+
+            Toast.makeText(this, "current hour: " + cal.get(Calendar.HOUR_OF_DAY),
+                    Toast.LENGTH_SHORT).show();
+
+            //if between 7pm-7am switch to night
+            if (cal.get(Calendar.HOUR_OF_DAY)>=19 || cal.get(Calendar.HOUR_OF_DAY)<7 ){
+                return night;
+            }
+            //else day
+            else
+                return day;
+
+        }
+        else
+        {
+            return day;
+        }
+    }
 
 
     @Override

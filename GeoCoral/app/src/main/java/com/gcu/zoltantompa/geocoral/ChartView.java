@@ -32,9 +32,10 @@ public class ChartView extends AppCompatActivity{
     Intent settings_Screen;
     Intent codeList_Screen;
 
+    pcQueryUrlBuilder urlBuilder;
 
 
-
+    //this is now dynamically generated
     // URL to get JSON
     private static String url = "http://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&limit=100&minmagnitude=1&orderby=time";
 

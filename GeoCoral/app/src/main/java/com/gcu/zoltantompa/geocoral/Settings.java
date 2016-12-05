@@ -110,9 +110,8 @@ public class Settings extends AppCompatActivity implements OnClickListener {
         LimitResValueDisp = (TextView) findViewById(R.id.LimitResValueDisp);
 
 
-
         //set up the date-formatter
-        dateFormatter = new SimpleDateFormat("dd-MM-yyyy", Locale.UK);
+        dateFormatter = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
 
 
 
@@ -179,7 +178,6 @@ public class Settings extends AppCompatActivity implements OnClickListener {
 
 
         //SWITCHES; set event-listeners and save settings change
-
         isDayNightModeOn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {

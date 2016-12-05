@@ -87,7 +87,7 @@
 
         custom:tickStart="0"
         custom:tickInterval="1"
-        custom:tickEnd="100"
+        custom:tickEnd="10"
         custom:tickColor="@color/ZdarkYellow"
 
         custom:rangeBarColor ="@color/ZdarkYellow"

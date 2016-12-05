@@ -30,8 +30,9 @@ public class ListView extends AppCompatActivity implements Serializable {
 
     private android.widget.ListView lv;
 
+    //this is now dynamically generated
     // URL to get JSON
-    private static String url = "http://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&limit=100&minmagnitude=1&orderby=time";
+    //private static String url = "http://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&limit=100&minmagnitude=1&orderby=time";
 
     //the list of EarthQuake objects
     public ArrayList<EarthQ> EQList;
@@ -47,7 +48,7 @@ public class ListView extends AppCompatActivity implements Serializable {
 
     Toast toast;
 
-
+    pcQueryUrlBuilder urlBuilder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,9 +68,9 @@ public class ListView extends AppCompatActivity implements Serializable {
         lv = (android.widget.ListView)findViewById(R.id.listViewList);
         lv.setTextFilterEnabled(true);
 
+        urlBuilder = new pcQueryUrlBuilder(this);
 
-
-        pcHttpJSONAsync service = new pcHttpJSONAsync(url, this) {
+        pcHttpJSONAsync service = new pcHttpJSONAsync(urlBuilder.getFinalURL(), this) {
             @Override
             public void onResponseReceived(Object resultMap, ArrayList<EarthQ> resultObjList) {
                 // Updating parsed JSON data into ListView
