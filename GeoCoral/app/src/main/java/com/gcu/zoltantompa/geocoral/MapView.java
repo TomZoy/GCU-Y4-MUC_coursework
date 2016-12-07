@@ -243,7 +243,7 @@ public class MapView extends AppCompatActivity  implements OnMapReadyCallback, O
             toast = Toast.makeText(getApplicationContext(), "EQList size: " + resultObjList.size(), Toast.LENGTH_SHORT);
             toast.show();
         }
-        EarthQ nearest = null;
+        EarthQ nearest = resultObjList.get(0);
         float distance = Float.MAX_VALUE;
 
         float[] returnVales = new float[3];
@@ -347,14 +347,11 @@ public class MapView extends AppCompatActivity  implements OnMapReadyCallback, O
         }
 
 
-
-
         //once the map is loaded, execute the async service
         service.execute();
 
         //position the map
         mMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(47.468637, 19.067642)));
-
     }
 
     //script to determine which map-stye to use, depending on the settings and the time of the day
@@ -368,9 +365,10 @@ public class MapView extends AppCompatActivity  implements OnMapReadyCallback, O
             //get the time on the device
             Calendar cal = Calendar.getInstance();
 
-            Toast.makeText(this, "current hour: " + cal.get(Calendar.HOUR_OF_DAY),
-                    Toast.LENGTH_SHORT).show();
-
+            if (debugEnabled) {
+                Toast.makeText(this, "current hour: " + cal.get(Calendar.HOUR_OF_DAY),
+                        Toast.LENGTH_SHORT).show();
+            }
             //if between 7pm-7am switch to night
             if (cal.get(Calendar.HOUR_OF_DAY)>=19 || cal.get(Calendar.HOUR_OF_DAY)<7 ){
                 return night;
