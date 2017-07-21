@@ -113,7 +113,15 @@ public abstract class pcHttpJSONAsync extends AsyncTask<Void, Void, Void> implem
                     resultObj.setMag(Float.parseFloat(JsonNProperties.getString("mag")));
                     resultObj.setPlace(JsonNProperties.getString("place"));
                     resultObj.setTime(Long.parseLong(JsonNProperties.getString("time")));
-                    resultObj.setTz(Integer.parseInt(JsonNProperties.getString("tz")));
+
+                    try {
+                        resultObj.setTz(Integer.parseInt(JsonNProperties.getString("tz")));
+                    } catch(NumberFormatException e) {
+                        resultObj.setTz(0);
+                    } catch(NullPointerException e) {
+                        resultObj.setTz(0);
+                    }
+
 
                     if(!JsonNProperties.isNull("sig"))
                         resultObj.setSig(Integer.parseInt(JsonNProperties.getString("sig")));

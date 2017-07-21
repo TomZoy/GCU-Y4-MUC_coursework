@@ -16,7 +16,7 @@ public class pcQueryUrlBuilder {
     Toast toast;
 
     private String finalURL;
-    private static String baseURL = "http://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson";
+    private static String baseURL = "https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson";
 
 
     boolean isSDatePeriodEnabled = false;
